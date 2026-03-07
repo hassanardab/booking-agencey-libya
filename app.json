@@ -22,6 +22,14 @@
       "predictiveBackGestureEnabled": false
     },
 
+    "extra": {
+      "supportsRTL": true,
+      "router": {},
+      "eas": {
+        "projectId": "77ee3f93-1fb1-41ae-99cb-73eeec03ca62"
+      }
+    },
+
     "plugins": [
       "expo-router",
       [
@@ -30,10 +38,13 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff",
-          "dark": {
-            "backgroundColor": "#000000"
-          }
+          "backgroundColor": "#ffffff"
+        }
+      ],
+      [
+        "expo-localization",
+        {
+          "supportedLocales": ["en", "ar"]
         }
       ]
     ],
@@ -41,12 +52,7 @@
       "typedRoutes": true,
       "reactCompiler": true
     },
-    "extra": {
-      "router": {},
-      "eas": {
-        "projectId": "77ee3f93-1fb1-41ae-99cb-73eeec03ca62"
-      }
-    },
-    "owner": "blackcyg"
+
+    "owner": "cygHas"
   }
 }

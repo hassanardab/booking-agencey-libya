@@ -1,3 +1,4 @@
+import * as Updates from "expo-updates"; // Needs: npx expo install expo-updates
 import {
   Bell,
   Building2,
@@ -14,7 +15,10 @@ import {
   Type,
 } from "lucide-react-native";
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
+  Alert,
+  I18nManager,
   Image,
   ScrollView,
   StyleSheet,
@@ -39,6 +43,54 @@ const COLORS = {
 const SettingsPage = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [notifications, setNotifications] = useState(true);
+  const { t, i18n } = useTranslation();
+
+  const toggleLanguage = async () => {
+    try {
+      const isArabic = i18n.language === "ar";
+      const nextLang = isArabic ? "en" : "ar";
+      const shouldBeRTL = nextLang === "ar";
+
+      // Update i18n locale (this changes translations immediately)
+      await i18n.changeLanguage(nextLang);
+
+      // Only reload if RTL setting actually changes
+      if (I18nManager.isRTL !== shouldBeRTL) {
+        I18nManager.allowRTL(shouldBeRTL);
+        I18nManager.forceRTL(shouldBeRTL);
+
+        // Small delay to allow state to settle
+        setTimeout(async () => {
+          try {
+            // Check if reloadAsync is available and call it
+            if (Updates.reloadAsync) {
+              await Updates.reloadAsync();
+            } else {
+              // Fallback for environments where expo-updates is not available
+              Alert.alert(
+                "Language Changed",
+                "Please restart the app to apply RTL layout changes.",
+                [{ text: "OK" }],
+              );
+            }
+          } catch (reloadError) {
+            console.warn(
+              "Reload failed, prompting manual restart",
+              reloadError,
+            );
+            Alert.alert(
+              "Restart Required",
+              "Please close and reopen the app for the new layout to take effect.",
+              [{ text: "OK" }],
+            );
+          }
+        }, 200);
+      }
+    } catch (error) {
+      console.error("Failed to switch language:", error);
+      Alert.alert("Error", "Could not change language. Please try again.");
+    }
+  };
 
   // Reusable Setting Row Component
   const SettingRow = ({
@@ -114,7 +166,12 @@ const SettingsPage = () => {
         {/* 3. App Settings */}
         <Text style={styles.sectionTitle}>App Settings</Text>
         <View style={styles.card}>
-          <SettingRow icon={Globe} label="Language" value="English (US)" />
+          <SettingRow
+            icon={Globe}
+            label={t("language")} // Use translation key
+            value={i18n.language === "en" ? "English" : "العربية"} // Show active lang
+            onPress={toggleLanguage}
+          />
           <SettingRow icon={Type} label="Font Size" value="Default" />
           <SettingRow
             icon={Bell}

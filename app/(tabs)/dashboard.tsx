@@ -9,7 +9,9 @@ import {
   Wallet,
 } from "lucide-react-native";
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
+  I18nManager,
   ScrollView,
   StyleSheet,
   Text,
@@ -34,6 +36,9 @@ const COLORS = {
 const Dashboard = () => {
   const [activeFilter, setActiveFilter] = useState("Today");
   const [search, setSearch] = useState("");
+  const { t, i18n } = useTranslation();
+
+  const isRTL = I18nManager.isRTL; // Track the current layout direction
 
   // Mock Data
   const stats = [
@@ -152,9 +157,9 @@ const Dashboard = () => {
 
         {/* 4. Calendar Strip (Quick View) */}
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Schedule</Text>
+          <Text style={styles.sectionTitle}>{t("dashboard.title")}</Text>
           <TouchableOpacity>
-            <Text style={styles.viewAll}>View Calendar</Text>
+            <Text style={styles.viewAll}>{t("dashboard.view.calendar")}</Text>
           </TouchableOpacity>
         </View>
         <ScrollView
@@ -180,7 +185,9 @@ const Dashboard = () => {
         </ScrollView>
 
         {/* 5. Active Event List */}
-        <Text style={styles.sectionTitle}>Upcoming Events</Text>
+        <Text style={styles.sectionTitle}>
+          {t("dashboard.upcoming.events")}
+        </Text>
         {events.map((event) => (
           <TouchableOpacity key={event.id} style={styles.eventCard}>
             <View style={styles.eventInfo}>
@@ -201,7 +208,9 @@ const Dashboard = () => {
 
         {/* 6. Postponed Events */}
         <View style={styles.postponedHeader}>
-          <Text style={styles.sectionTitle}>Postponed</Text>
+          <Text style={styles.sectionTitle}>
+            {t("dashboard.postponed.events")}
+          </Text>
           <View style={styles.badge}>
             <Text style={styles.badgeText}>{postponed.length}</Text>
           </View>
