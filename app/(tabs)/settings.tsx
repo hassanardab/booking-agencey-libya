@@ -1,3 +1,6 @@
+import { Colors, Radius, Shadows, Spacing } from "@/constants/theme";
+
+import { useColorScheme } from "@/hooks/use-color-scheme";
 import * as Updates from "expo-updates"; // Needs: npx expo install expo-updates
 import {
   Bell,
@@ -30,19 +33,15 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const COLORS = {
-  bg: "#F8FAFC",
-  primary: "#6366F1",
-  textMain: "#1E293B",
-  textSub: "#64748B",
-  white: "#FFFFFF",
-  cardBorder: "#E2E8F0",
-  accent: "#F1F5F9",
-};
-
 const SettingsPage = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [notifications, setNotifications] = useState(true);
+  const [search, setSearch] = useState("");
+
+  const colorScheme = useColorScheme();
+  const theme = Colors[colorScheme ?? "light"];
+  const styles = createStyles(theme);
+
   const { t, i18n } = useTranslation();
 
   const toggleLanguage = async () => {
@@ -108,18 +107,30 @@ const SettingsPage = () => {
     >
       <View style={styles.rowLeft}>
         <View style={styles.iconSquare}>
-          <Icon size={20} color={COLORS.primary} strokeWidth={2} />
+          <Icon
+            size={20}
+            color={Colors[colorScheme ?? "light"].primary}
+            strokeWidth={2}
+          />
         </View>
         <Text style={styles.rowLabel}>{label}</Text>
       </View>
       <View style={styles.rowRight}>
         {type === "nav" && <Text style={styles.rowValue}>{value}</Text>}
-        {type === "nav" && <ChevronRight size={18} color={COLORS.textSub} />}
+        {type === "nav" && (
+          <ChevronRight
+            size={18}
+            color={Colors[colorScheme ?? "light"].textSecondary}
+          />
+        )}
         {type === "switch" && (
           <Switch
             value={value}
             onValueChange={onPress}
-            trackColor={{ false: "#CBD5E1", true: COLORS.primary }}
+            trackColor={{
+              false: "#CBD5E1",
+              true: Colors[colorScheme ?? "light"].primary,
+            }}
           />
         )}
       </View>
@@ -128,22 +139,26 @@ const SettingsPage = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* 1. Sticky Header & Search */}
-      <View style={styles.header}>
-        <View style={styles.searchContainer}>
-          <Search size={18} color={COLORS.textSub} style={styles.searchIcon} />
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search settings..."
-            placeholderTextColor={COLORS.textSub}
-          />
-        </View>
-      </View>
-
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollBody}
       >
+        {/* 1. Search */}
+        <View style={styles.searchContainer}>
+          <Search
+            size={20}
+            color={theme.textSecondary}
+            style={styles.searchIcon}
+          />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search events, clients..."
+            placeholderTextColor={theme.textSecondary}
+            value={search}
+            onChangeText={setSearch}
+          />
+        </View>
+
         {/* 2. User Profile Section */}
         <View style={styles.profileCard}>
           <Image
@@ -195,7 +210,10 @@ const SettingsPage = () => {
         <View style={[styles.card, styles.companyCard]}>
           <View style={styles.companyHeader}>
             <View style={styles.logoContainer}>
-              <Building2 size={32} color={COLORS.white} />
+              <Building2
+                size={32}
+                color={Colors[colorScheme ?? "light"].white}
+              />
             </View>
             <View>
               <Text style={styles.companyName}>Nexus Creative Ltd.</Text>
@@ -238,7 +256,10 @@ const SettingsPage = () => {
         <View style={styles.card}>
           <SettingRow icon={Laptop} label="Developer Mode" value="v2.4.0-pro" />
           <TouchableOpacity style={styles.botButton}>
-            <MessageSquareCode size={20} color={COLORS.white} />
+            <MessageSquareCode
+              size={20}
+              color={Colors[colorScheme ?? "light"].white}
+            />
             <Text style={styles.botButtonText}>Contact Support Bot</Text>
           </TouchableOpacity>
         </View>
@@ -251,148 +272,279 @@ const SettingsPage = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: COLORS.bg },
-  header: {
-    paddingHorizontal: 20,
-    paddingTop: 10,
-    paddingBottom: 15,
-    backgroundColor: COLORS.white,
-  },
-  searchContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: COLORS.accent,
-    borderRadius: 12,
-    paddingHorizontal: 12,
-  },
-  searchIcon: { marginRight: 10 },
-  searchInput: { height: 44, flex: 1, fontSize: 15, color: COLORS.textMain },
+const createStyles = (
+  theme:
+    | {
+        primary: string;
+        background: string;
+        surface: string;
+        textMain: string;
+        textSecondary: string;
+        border: string;
+        divider: string;
+        success: string;
+        warning: string;
+        danger: string;
+        timelineLine: string;
+        shadow: string;
+        icon: string;
+        white: string;
+      }
+    | {
+        primary: string;
+        background: string;
+        surface: string;
+        textMain: string;
+        textSecondary: string;
+        border: string;
+        divider: string;
+        success: string;
+        warning: string;
+        danger: string;
+        timelineLine: string;
+        shadow: string;
+        icon: string;
+        white: string;
+      },
+) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.background,
+    },
 
-  scrollBody: { padding: 20 },
+    header: {
+      paddingHorizontal: Spacing.lg,
+      paddingTop: Spacing.sm,
+      paddingBottom: Spacing.md,
+      backgroundColor: theme.surface,
+      borderBottomWidth: 1,
+      borderBottomColor: theme.border,
+    },
 
-  // Profile
-  profileCard: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: COLORS.white,
-    padding: 20,
-    borderRadius: 24,
-    marginBottom: 25,
-    borderWidth: 1,
-    borderColor: COLORS.cardBorder,
-  },
-  avatar: { width: 70, height: 70, borderRadius: 35, marginRight: 15 },
-  userName: {
-    fontSize: 14,
-    color: COLORS.primary,
-    fontWeight: "700",
-    textTransform: "uppercase",
-  },
-  fullName: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: COLORS.textMain,
-    marginVertical: 2,
-  },
-  roleBadge: {
-    backgroundColor: COLORS.accent,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
-    alignSelf: "flex-start",
-  },
-  roleText: { fontSize: 12, color: COLORS.textSub, fontWeight: "600" },
+    searchContainer: {
+      flexDirection: "row",
+      alignItems: "center",
+      backgroundColor: theme.divider,
+      marginBottom: Spacing.xl,
+      borderRadius: Radius.md,
+      paddingHorizontal: Spacing.md,
+    },
 
-  sectionTitle: {
-    fontSize: 14,
-    fontWeight: "700",
-    color: COLORS.textSub,
-    textTransform: "uppercase",
-    marginLeft: 5,
-    marginBottom: 10,
-    letterSpacing: 1,
-  },
-  card: {
-    backgroundColor: COLORS.white,
-    borderRadius: 20,
-    paddingHorizontal: 16,
-    marginBottom: 25,
-    borderWidth: 1,
-    borderColor: COLORS.cardBorder,
-  },
+    searchIcon: {
+      marginRight: Spacing.sm,
+    },
 
-  // Setting Rows
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.cardBorder,
-  },
-  rowLeft: { flexDirection: "row", alignItems: "center" },
-  iconSquare: {
-    width: 36,
-    height: 36,
-    backgroundColor: "#EEF2FF",
-    borderRadius: 10,
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 12,
-  },
-  rowLabel: { fontSize: 16, fontWeight: "500", color: COLORS.textMain },
-  rowRight: { flexDirection: "row", alignItems: "center" },
-  rowValue: { fontSize: 14, color: COLORS.textSub, marginRight: 8 },
+    searchInput: {
+      height: 44,
+      flex: 1,
+      fontSize: 15,
+      color: theme.textMain,
+    },
 
-  // Company Card
-  companyCard: { padding: 20, backgroundColor: COLORS.textMain }, // Dark theme card
-  companyHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 15,
-  },
-  logoContainer: {
-    width: 50,
-    height: 50,
-    backgroundColor: COLORS.primary,
-    borderRadius: 12,
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 12,
-  },
-  companyName: { fontSize: 18, fontWeight: "bold", color: COLORS.white },
-  companySlogan: { fontSize: 12, color: "#94A3B8" },
-  divider: { height: 1, backgroundColor: "#334155", marginVertical: 15 },
-  companyDetailRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 8,
-  },
-  detailLabel: { color: "#94A3B8", fontSize: 13 },
-  detailValue: { color: COLORS.white, fontSize: 13, fontWeight: "600" },
+    scrollBody: {
+      padding: Spacing.lg,
+    },
 
-  // Bot Button
-  botButton: {
-    flexDirection: "row",
-    backgroundColor: COLORS.primary,
-    marginVertical: 16,
-    padding: 16,
-    borderRadius: 14,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  profileInfo: {
-    flex: 1, // This allows the text to take up the rest of the card space
-    justifyContent: "center",
-  },
-  botButtonText: { color: COLORS.white, fontWeight: "bold", marginLeft: 10 },
-  footerVersion: {
-    textAlign: "center",
-    color: COLORS.textSub,
-    fontSize: 12,
-    marginBottom: 30,
-  },
-});
+    /* Profile */
+
+    profileCard: {
+      flexDirection: "row",
+      alignItems: "center",
+      backgroundColor: theme.surface,
+      padding: Spacing.lg,
+      borderRadius: Radius.xl,
+      marginBottom: Spacing.xl,
+      borderWidth: 1,
+      borderColor: theme.border,
+      ...Shadows.card,
+    },
+
+    avatar: {
+      width: 70,
+      height: 70,
+      borderRadius: 35,
+      marginRight: Spacing.md,
+    },
+
+    profileInfo: {
+      flex: 1,
+      justifyContent: "center",
+    },
+
+    userName: {
+      fontSize: 14,
+      color: theme.primary,
+      fontWeight: "700",
+      textTransform: "uppercase",
+    },
+
+    fullName: {
+      fontSize: 20,
+      fontWeight: "bold",
+      color: theme.textMain,
+      marginVertical: 2,
+    },
+
+    roleBadge: {
+      backgroundColor: theme.divider,
+      paddingHorizontal: 8,
+      paddingVertical: 4,
+      borderRadius: Radius.sm,
+      alignSelf: "flex-start",
+    },
+
+    roleText: {
+      fontSize: 12,
+      color: theme.textSecondary,
+      fontWeight: "600",
+    },
+
+    sectionTitle: {
+      fontSize: 14,
+      fontWeight: "700",
+      color: theme.textSecondary,
+      textTransform: "uppercase",
+      marginLeft: 5,
+      marginBottom: Spacing.sm,
+      letterSpacing: 1,
+    },
+
+    card: {
+      backgroundColor: theme.surface,
+      borderRadius: Radius.lg,
+      paddingHorizontal: Spacing.lg,
+      marginBottom: Spacing.xl,
+      borderWidth: 1,
+      borderColor: theme.border,
+      ...Shadows.card,
+    },
+
+    /* Setting rows */
+
+    row: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingVertical: Spacing.lg,
+      borderBottomWidth: 1,
+      borderBottomColor: theme.border,
+    },
+
+    rowLeft: {
+      flexDirection: "row",
+      alignItems: "center",
+    },
+
+    iconSquare: {
+      width: 36,
+      height: 36,
+      backgroundColor: theme.divider,
+      borderRadius: Radius.sm,
+      justifyContent: "center",
+      alignItems: "center",
+      marginRight: Spacing.md,
+    },
+
+    rowLabel: {
+      fontSize: 16,
+      fontWeight: "500",
+      color: theme.textMain,
+    },
+
+    rowRight: {
+      flexDirection: "row",
+      alignItems: "center",
+    },
+
+    rowValue: {
+      fontSize: 14,
+      color: theme.textSecondary,
+      marginRight: Spacing.sm,
+    },
+
+    /* Company Card */
+
+    companyCard: {
+      padding: Spacing.lg,
+      backgroundColor: theme.textMain,
+      borderRadius: Radius.lg,
+    },
+
+    companyHeader: {
+      flexDirection: "row",
+      alignItems: "center",
+      marginBottom: Spacing.md,
+    },
+
+    logoContainer: {
+      width: 50,
+      height: 50,
+      backgroundColor: theme.primary,
+      borderRadius: Radius.md,
+      justifyContent: "center",
+      alignItems: "center",
+      marginRight: Spacing.md,
+    },
+
+    companyName: {
+      fontSize: 18,
+      fontWeight: "bold",
+      color: theme.white,
+    },
+
+    companySlogan: {
+      fontSize: 12,
+      color: "#94A3B8",
+    },
+
+    divider: {
+      height: 1,
+      backgroundColor: "#334155",
+      marginVertical: Spacing.md,
+    },
+
+    companyDetailRow: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      marginBottom: Spacing.sm,
+    },
+
+    detailLabel: {
+      color: "#94A3B8",
+      fontSize: 13,
+    },
+
+    detailValue: {
+      color: theme.white,
+      fontSize: 13,
+      fontWeight: "600",
+    },
+
+    /* Bot button */
+
+    botButton: {
+      flexDirection: "row",
+      backgroundColor: theme.primary,
+      marginVertical: Spacing.lg,
+      padding: Spacing.lg,
+      borderRadius: Radius.md,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+
+    botButtonText: {
+      color: theme.white,
+      fontWeight: "bold",
+      marginLeft: Spacing.sm,
+    },
+
+    footerVersion: {
+      textAlign: "center",
+      color: theme.textSecondary,
+      fontSize: 12,
+      marginBottom: Spacing.xl,
+    },
+  });
 
 export default SettingsPage;
