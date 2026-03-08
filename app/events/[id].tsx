@@ -1,11 +1,14 @@
 //app/events/[id].tsx
 import { Colors, Spacing } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
+import { getAllJournalsForEvent } from "@/services/accountingService";
 import { getEventById } from "@/services/eventService";
+import { JournalEntry } from "@/types/accounting";
 import { FontAwesome5, Ionicons } from "@expo/vector-icons";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import React from "react";
 import {
+  Alert,
   Dimensions,
   Linking,
   ScrollView,
@@ -25,6 +28,7 @@ export default function EventDetails() {
   const styles = createStyles(theme);
 
   const event = getEventById(id as string);
+  const payments = getAllJournalsForEvent(event?.id as string);
 
   if (!event)
     return (
@@ -41,7 +45,14 @@ export default function EventDetails() {
     );
   };
 
-  // --- INTERNAL SUB-COMPONENTS (Now they have access to 'styles') ---
+  // Receipt button handler (placeholder)
+  const handleReceiptPress = (entry: JournalEntry) => {
+    Alert.alert(
+      "Receipt",
+      `Print receipt for ${getJournalAmount(entry)} ${entry.currency || "USD"}`,
+    );
+    // You can navigate to a receipt preview screen here
+  };
 
   const StatCard = ({ label, amount, color, isBold }: any) => (
     <View style={styles.statCard}>
@@ -74,6 +85,27 @@ export default function EventDetails() {
       </Text>
     </TouchableOpacity>
   );
+
+  // Helper to format date as "dd MMM yyyy • hh:mm a"
+  const formatJournalDate = (date: Date): string => {
+    const d = new Date(date);
+    const day = d.getDate();
+    const month = d.toLocaleString("default", { month: "short" });
+    const year = d.getFullYear();
+    const time = d.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    return `${day} ${month} ${year} • ${time}`;
+  };
+
+  // Helper to get total amount from a journal entry (sum of debits)
+  const getJournalAmount = (entry: JournalEntry): number => {
+    return entry.transactions.reduce(
+      (sum, t) => (t.type === "debit" ? sum + t.amount : sum),
+      0,
+    );
+  };
 
   return (
     <SafeAreaView
@@ -164,30 +196,74 @@ export default function EventDetails() {
             />
           </View>
 
-          {/* 3. Timeline */}
+          {/* 3. Timeline – Dynamic from Journal Entries */}
           <Text style={styles.sectionTitle}>Payment Timeline</Text>
           <View style={styles.timelineContainer}>
-            <View style={styles.timelineItem}>
-              <View style={styles.timelineLineContainer}>
-                <View style={styles.timelineDot} />
-                <View style={styles.timelineLine} />
-              </View>
-              <View style={styles.timelineContent}>
-                <View style={styles.rowBetween}>
-                  <Text style={styles.paymentType}>Deposit - Cash</Text>
-                  <TouchableOpacity style={styles.receiptBtn}>
-                    <Ionicons
-                      name="print-outline"
-                      size={14}
-                      color={theme.primary}
-                    />
-                    <Text style={styles.receiptBtnText}>A5 Receipt</Text>
-                  </TouchableOpacity>
-                </View>
-                <Text style={styles.paymentMeta}>24 Oct 2023 • 02:30 PM</Text>
-                <Text style={styles.recordedBy}>Recorded by: Admin</Text>
-              </View>
-            </View>
+            {payments.length === 0 ? (
+              <Text style={styles.emptyTimeline}>No payments recorded</Text>
+            ) : (
+              payments.map((entry, index) => {
+                const amount = getJournalAmount(entry);
+                const paymentMethod = entry.metadata?.paymentMethod || "other";
+                const paymentType = entry.description || "Payment";
+                const isLast = index === payments.length - 1;
+
+                return (
+                  <View key={entry.id} style={styles.timelineItem}>
+                    <View style={styles.timelineLineContainer}>
+                      <View style={styles.timelineDot} />
+                      {!isLast && <View style={styles.timelineLine} />}
+                    </View>
+                    <View style={styles.timelineContent}>
+                      <View style={styles.rowBetween}>
+                        {/* <Text style={styles.paymentType}>
+                          {paymentType} -{" "}
+                          {paymentMethod.replace("_", " ").toUpperCase()}
+                        </Text> */}
+                        <Text style={styles.paymentType}>
+                          {entry.currency || "USD"} {amount.toFixed(2)}
+                        </Text>
+                        {/* Fixed receipt button – now visible and clickable */}
+                        <TouchableOpacity
+                          style={styles.receiptBtn}
+                          // onPress={() =>
+                          //   Alert.alert(
+                          //     "Receipt",
+                          //     `Print receipt for ${entry.currency || "USD"} ${amount.toFixed(
+                          //       2,
+                          //     )}\nEntry ID: ${entry.id}`,
+                          //   )
+                          // }
+                          onPress={() =>
+                            router.push({
+                              pathname: "/pdf/receipt",
+                              params: {
+                                eventId: event.id,
+                                entryId: entry.id,
+                              },
+                            })
+                          }
+                        >
+                          <Ionicons
+                            name="print-outline"
+                            size={14}
+                            color={theme.primary}
+                          />
+                          <Text style={styles.receiptBtnText}>A5 Receipt</Text>
+                        </TouchableOpacity>
+                      </View>
+                      <Text style={styles.paymentMeta}>
+                        {formatJournalDate(entry.date)} •{" "}
+                        {paymentMethod.replace("_", " ").toUpperCase()}
+                      </Text>
+                      <Text style={styles.recordedBy}>
+                        Recorded by: {entry.metadata?.recordedBy || "System"}
+                      </Text>
+                    </View>
+                  </View>
+                );
+              })
+            )}
           </View>
 
           {/* 4. Action Grid */}
@@ -350,4 +426,10 @@ const createStyles = (theme: any) =>
       flex: 1,
     },
     actionBtnText: { fontWeight: "700", fontSize: 14 },
+    emptyTimeline: {
+      textAlign: "center",
+      color: theme.textSecondary,
+      fontStyle: "italic",
+      marginTop: 20,
+    },
   });

@@ -50,23 +50,35 @@ Join our community of developers creating universal apps.
 - [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
 
 ==========
-project plan
-[x] UI main 3 page with themes
-[x] search function UI
-[x] event details screen
-[x] event stat screen
-[x] add event screen
-[x] Calendar screen
-[_] week day picker
-[_] public page UI
+## project plan & phases
+- Phase #1 UI
+[x][x] UI main 3 page with themes
+[x][x] search function UI
+[x][x] event details screen
+[x][x] event stat screen
+[x][x] add event screen
+[x][x] Calendar screen
 
-[_] all dashboard sub UI done
-[_] activites sub UI
-[_] settings sub UI
-[_] public page sub UI
+[x][_] generate pdf receipt
+[_][_] generate pdf agreement
+[_][_] sign the pdf agreement
 
-[_] public page view
+[_][_] week day picker
 
-[_] sign up
-[_] login page
-[_] forget password page
+[_][_] public page UI
+[_][_] contorl panel for public page
+
+[_][_] all dashboard sub UI done
+[_][_] activites sub UI
+[_][_] settings sub UI
+[_][_] public page sub UI
+
+[_][_] public page view
+
+[_][_] sign up
+[_][_] login page
+[_][_] forget password page
+
+- Phase #2 Backend
+
+- Phase #3 Testing

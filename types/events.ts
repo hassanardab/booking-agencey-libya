@@ -1,4 +1,4 @@
-// data/mockEvents.ts
+//types/events.ts
 
 export interface BookingEvent {
   id: string;
