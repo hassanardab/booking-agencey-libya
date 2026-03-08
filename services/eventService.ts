@@ -1,3 +1,4 @@
+//services/eventService.ts
 import { MOCK_EVENTS } from "@/data/mockEvents";
 import { BookingEvent } from "@/types/events";
 

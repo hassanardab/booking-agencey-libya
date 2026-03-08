@@ -1,8 +1,10 @@
+//app/events/create.tsx
 import { Colors, Radius, Spacing } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
+import { getEventById } from "@/services/eventService";
 import { Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { Stack, router } from "expo-router";
+import { Stack, router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import {
   KeyboardAvoidingView,
@@ -17,25 +19,8 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function CreateEvent() {
-  // Form state
-  const [form, setForm] = useState({
-    title: "",
-    customer: "",
-    phone: "",
-    amount: "",
-    date: new Date(),
-    notes: "",
-  });
-
-  // Payment section state
-  const [paymentMethod, setPaymentMethod] = useState<
-    "cash" | "card" | "transfer"
-  >("cash");
-  const [paidAmount, setPaidAmount] = useState("");
-
-  // Picker visibility
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [showTimePicker, setShowTimePicker] = useState(false);
+  const { id } = useLocalSearchParams();
+  const event = getEventById(id as string);
 
   // Helper: format phone number as ###-###-####
   const formatPhone = (text: string) => {
@@ -62,6 +47,32 @@ export default function CreateEvent() {
       minimumFractionDigits: 0,
     });
   };
+
+  // Initialise form state with event data if editing
+  const [form, setForm] = useState(() => ({
+    title: event?.title || "",
+    customer: event?.customerName || "",
+    phone: event?.customerPhone
+      ? formatPhone(event.customerPhone)
+      : event?.customerPhones?.[0]
+        ? formatPhone(event.customerPhones[0])
+        : "",
+    amount: event?.amount ? formatAmount(event.amount.toString()) : "",
+    date: event?.startDate ? new Date(event.startDate) : new Date(),
+    notes: event?.notes || "",
+  }));
+
+  // Payment section state
+  const [paymentMethod, setPaymentMethod] = useState<
+    "cash" | "card" | "transfer"
+  >("cash"); // event does not include payment method – default to cash
+  const [paidAmount, setPaidAmount] = useState(
+    event?.paidAmount ? formatAmount(event.paidAmount.toString()) : "",
+  );
+
+  // Picker visibility
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showTimePicker, setShowTimePicker] = useState(false);
 
   const handlePhoneChange = (text: string) => {
     const formatted = formatPhone(text);
@@ -110,6 +121,8 @@ export default function CreateEvent() {
       date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
     );
   };
+
+  const isEditing = !!id;
 
   return (
     <SafeAreaView
@@ -370,7 +383,9 @@ export default function CreateEvent() {
             router.back();
           }}
         >
-          <Text style={styles.saveBtnText}>Create Booking</Text>
+          <Text style={styles.saveBtnText}>
+            {isEditing ? "Update Booking" : "Create Booking"}
+          </Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
