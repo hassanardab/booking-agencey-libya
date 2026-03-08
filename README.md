@@ -49,16 +49,24 @@ Join our community of developers creating universal apps.
 - [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
 - [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
 
-
 ==========
 project plan
-[x] UI main 3 page with themes 
-[_] dashboard sub UI
-   [x] search function UI
-   [x] event details screen
-   [x] event stat screen
-   [x] add event screen
-   [x] Calendar screen
+[x] UI main 3 page with themes
+[x] search function UI
+[x] event details screen
+[x] event stat screen
+[x] add event screen
+[x] Calendar screen
+[_] week day picker
+[_] public page UI
 
-[_] activites sub UI 
-[_] settings sub UI 
+[_] all dashboard sub UI done
+[_] activites sub UI
+[_] settings sub UI
+[_] public page sub UI
+
+[_] public page view
+
+[_] sign up
+[_] login page
+[_] forget password page
