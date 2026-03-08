@@ -1,0 +1,45 @@
+//data/mockEvents.ts
+import { BookingEvent } from "@/types/events";
+
+export const MOCK_EVENTS: BookingEvent[] = [
+  {
+    id: "1",
+    title: "Corporate Gala",
+    customerName: "Acme Corp",
+    startDate: new Date(new Date().setHours(14, 0, 0, 0)),
+    endDate: new Date(new Date().setHours(20, 0, 0, 0)),
+    amount: 2400,
+    paidAmount: 2400,
+    currency: "USD",
+    status: "confirmed",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: "2",
+    title: "Wedding Photography",
+    customerName: "Sarah & John",
+    startDate: new Date(new Date().setHours(17, 30, 0, 0)),
+    endDate: new Date(new Date().setHours(23, 0, 0, 0)),
+    amount: 1200,
+    paidAmount: 600,
+    balance: 600,
+    currency: "USD",
+    status: "partially_paid",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: "3",
+    title: "Product Launch",
+    customerName: "TechFlow Inc",
+    startDate: new Date("2023-10-12T09:00:00"),
+    endDate: new Date("2023-10-12T17:00:00"),
+    amount: 3500,
+    currency: "USD",
+    status: "postponed",
+    notes: "Venue Issue",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+];

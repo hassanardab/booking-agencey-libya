@@ -18,20 +18,20 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen
-        name="activites"
-        options={{
-          title: "Activites",
-          tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="clock.fill" color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
         name="dashboard"
         options={{
           title: "Dashboard",
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="house.fill" color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="activites"
+        options={{
+          title: "Activites",
+          tabBarIcon: ({ color }) => (
+            <IconSymbol size={28} name="clock.fill" color={color} />
           ),
         }}
       />
