@@ -57,7 +57,8 @@ project plan
    [x] search function UI
    [x] event details screen
    [x] event stat screen
-   [_] add event screen
+   [x] add event screen
+   [_] Calendar screen
 
 [_] activites sub UI 
 [_] settings sub UI 

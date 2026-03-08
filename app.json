@@ -21,7 +21,6 @@
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false
     },
-
     "extra": {
       "supportsRTL": true,
       "router": {},
@@ -29,7 +28,6 @@
         "projectId": "77ee3f93-1fb1-41ae-99cb-73eeec03ca62"
       }
     },
-
     "plugins": [
       "expo-router",
       [
@@ -44,15 +42,18 @@
       [
         "expo-localization",
         {
-          "supportedLocales": ["en", "ar"]
+          "supportedLocales": [
+            "en",
+            "ar"
+          ]
         }
-      ]
+      ],
+      "@react-native-community/datetimepicker"
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
     },
-
     "owner": "cygHas"
   }
 }
