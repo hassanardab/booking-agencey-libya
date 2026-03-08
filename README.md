@@ -58,7 +58,7 @@ project plan
    [x] event details screen
    [x] event stat screen
    [x] add event screen
-   [_] Calendar screen
+   [x] Calendar screen
 
 [_] activites sub UI 
 [_] settings sub UI 

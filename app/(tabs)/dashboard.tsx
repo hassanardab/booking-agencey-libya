@@ -10,8 +10,8 @@ import {
   Calendar as CalendarIcon,
   ChevronRight,
   Clock,
-  Search,
   Plus,
+  Search,
   Wallet,
 } from "lucide-react-native";
 import React, { useState } from "react";
@@ -181,7 +181,7 @@ const Dashboard = () => {
             <Text style={styles.sectionTitle}>
               {t("dashboard.title", "Dashboard")}
             </Text>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => router.push(`/calendar`)}>
               <Text style={styles.viewAll}>
                 {t("dashboard.view.calendar", "View Calendar")}
               </Text>
@@ -278,13 +278,13 @@ const Dashboard = () => {
           ))}
         </ScrollView>
       </TouchableWithoutFeedback>
-      <TouchableOpacity 
-  style={styles.fab} 
-  onPress={() => router.push("/events/create")}
-  activeOpacity={0.8}
->
-  <Plus size={24} color={theme.white} />
-</TouchableOpacity>
+      <TouchableOpacity
+        style={styles.fab}
+        onPress={() => router.push("/events/create")}
+        activeOpacity={0.8}
+      >
+        <Plus size={24} color={theme.white} />
+      </TouchableOpacity>
     </SafeAreaView>
   );
 };
@@ -645,18 +645,18 @@ const createStyles = (
       color: theme.textMain,
     },
     fab: {
-  position: 'absolute',
-  bottom: 24,
-  right: 24,
-  width: 56,
-  height: 56,
-  borderRadius: 28,
-  backgroundColor: theme.primary,
-  justifyContent: 'center',
-  alignItems: 'center',
-  ...Shadows.card, // Using your design system shadow
-  elevation: 5, // Android specific shadow
-},
+      position: "absolute",
+      bottom: 24,
+      right: 24,
+      width: 56,
+      height: 56,
+      borderRadius: 28,
+      backgroundColor: theme.primary,
+      justifyContent: "center",
+      alignItems: "center",
+      ...Shadows.card, // Using your design system shadow
+      elevation: 5, // Android specific shadow
+    },
   });
 
 export default Dashboard;
