@@ -53,6 +53,11 @@ Join our community of developers creating universal apps.
 ==========
 project plan
 [x] UI main 3 page with themes 
-[_] dashboard sub UI 
+[_] dashboard sub UI
+   [x] search function UI
+   [x] event details screen
+   [_] event stat screen
+   [_] add event screen
+
 [_] activites sub UI 
 [_] settings sub UI 

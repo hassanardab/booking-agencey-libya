@@ -50,7 +50,14 @@ export default function EventDetails() {
 
   return (
     <View style={styles.container}>
-      <Stack.Screen options={{ headerTitle: "Event Details", headerShadowVisible: false }} />
+      <Stack.Screen
+        options={{
+          headerTitle: event.title, // Hides the text "stats/[id]"
+          headerShadowVisible: false, // Optional: makes header blend into background
+          headerStyle: { backgroundColor: theme.background },
+          headerTintColor: theme.textMain, // Sets back button color
+        }}
+      />
       
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
         

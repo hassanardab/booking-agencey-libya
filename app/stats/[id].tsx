@@ -1,4 +1,5 @@
-import { Colors, Spacing } from "@/constants/theme";
+//app/stats/[id].tsx
+import { Colors, Spacing, Radius, Shadows } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import {
@@ -8,6 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons"; 
 
 const MOCK_EVENTS = [
   {
@@ -27,55 +29,95 @@ const MOCK_EVENTS = [
 ];
 
 export default function StatsPage() {
-  const { id } = useLocalSearchParams(); // This 'id' is your category (e.g., 'cash')
+  const { id } = useLocalSearchParams(); 
   const scheme = useColorScheme();
   const theme = Colors[scheme ?? "light"];
 
+  // Format the ID nicely (e.g., "cash" -> "Cash Stats")
+  const pageTitle = id 
+    ? `${id.toString().charAt(0).toUpperCase()}${id.toString().slice(1)} Stats` 
+    : "Stats";
+
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      {/* 2. Use Stack.Screen to control the header */}
       <Stack.Screen
         options={{
-          headerTitle: "", // Hides the text "stats/[id]"
-          headerShadowVisible: false, // Optional: makes header blend into background
+          headerTitle: "",
+          headerShadowVisible: false, 
           headerStyle: { backgroundColor: theme.background },
-          headerTintColor: theme.textMain, // Sets back button color
+          headerTintColor: theme.textMain, 
         }}
       />
-      <Text style={[styles.header, { color: theme.textMain }]}>
-        Category: {id?.toString().toUpperCase()}
-      </Text>
+      
+      {/* Improved Page Header */}
+      <View style={styles.headerContainer}>
+        <Text style={[styles.header, { color: theme.textMain }]}>
+          {pageTitle}
+        </Text>
+        <Text style={[styles.subHeader, { color: theme.textSecondary }]}>
+          Review your recent activity
+        </Text>
+      </View>
 
       <FlatList
         data={MOCK_EVENTS}
         keyExtractor={(item) => item.id}
+        contentContainerStyle={styles.listContent}
+        showsVerticalScrollIndicator={false}
         renderItem={({ item }) => (
           <TouchableOpacity
             style={[
               styles.card,
-              { backgroundColor: theme.surface, borderColor: theme.border },
+              { 
+                backgroundColor: theme.surface, 
+                borderColor: theme.border,
+                ...Shadows.card // Pulled from your theme file
+              },
             ]}
-            // Navigate to event details
+            activeOpacity={0.7} // Better touch feedback
             onPress={() =>
               router.push({
-                // Use the literal string of the filename, not a template literal
                 pathname: "/events/[id]",
                 params: {
-                  id: item.id, // Expo Router maps this to the [id] in the path
-                  title: item.title,
-                  price: item.price,
-                  type: item.type,
-                  time: item.time,
+                  id: item.id,
                 },
               })
             }
           >
-            <View>
-              <Text style={{ color: theme.textMain, fontWeight: "600" }}>
+            {/* Left Icon Indicator */}
+            <View style={[styles.iconContainer, { backgroundColor: theme.background }]}>
+              <Ionicons 
+                name={item.type === 'cash' ? 'cash-outline' : 'card-outline'} 
+                size={24} 
+                color={theme.primary} 
+              />
+            </View>
+
+            {/* Main Center Content */}
+            <View style={styles.cardContent}>
+              <Text style={[styles.cardTitle, { color: theme.textMain }]} numberOfLines={1}>
                 {item.title}
               </Text>
-              <Text style={{ color: theme.textSecondary }}>{item.price}</Text>
+              <View style={styles.timeContainer}>
+                <Ionicons name="time-outline" size={14} color={theme.icon} />
+                <Text style={[styles.cardTime, { color: theme.textSecondary }]}>
+                  {item.time}
+                </Text>
+              </View>
             </View>
+
+            {/* Right Side Info (Price & Type) */}
+            <View style={styles.rightContent}>
+              <Text style={[styles.priceText, { color: theme.textMain }]}>
+                {item.price}
+              </Text>
+              <Text style={[styles.typeText, { color: theme.textSecondary }]}>
+                {item.type.toUpperCase()}
+              </Text>
+            </View>
+
+            {/* Chevron Affordance */}
+            <Ionicons name="chevron-forward" size={20} color={theme.icon} style={styles.chevron} />
           </TouchableOpacity>
         )}
       />
@@ -84,15 +126,73 @@ export default function StatsPage() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: Spacing.lg },
-  header: { fontSize: 20, fontWeight: "bold", marginBottom: 20 },
+  container: { 
+    flex: 1, 
+  },
+  headerContainer: {
+    paddingHorizontal: Spacing.lg,
+    paddingBottom: Spacing.lg,
+  },
+  header: { 
+    fontSize: 28, 
+    fontWeight: "800", 
+    letterSpacing: -0.5,
+  },
+  subHeader: {
+    fontSize: 16,
+    marginTop: Spacing.xs,
+  },
+  listContent: {
+    paddingHorizontal: Spacing.lg,
+    paddingBottom: Spacing.xxl, // Extra padding at bottom for safe scrolling
+  },
   card: {
-    padding: Spacing.lg,
-    marginBottom: 12,
-    borderRadius: 12,
+    padding: Spacing.md,
+    marginBottom: Spacing.md,
+    borderRadius: Radius.md,
     borderWidth: 1,
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
   },
+  iconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: Radius.sm,
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: Spacing.md,
+  },
+  cardContent: {
+    flex: 1,
+    justifyContent: "center",
+  },
+  cardTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    marginBottom: 4,
+  },
+  timeContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
+  cardTime: {
+    fontSize: 14,
+  },
+  rightContent: {
+    alignItems: "flex-end",
+    marginRight: Spacing.sm,
+  },
+  priceText: {
+    fontSize: 16,
+    fontWeight: "700",
+  },
+  typeText: {
+    fontSize: 12,
+    marginTop: 2,
+    fontWeight: "500",
+  },
+  chevron: {
+    marginLeft: Spacing.xs,
+  }
 });
