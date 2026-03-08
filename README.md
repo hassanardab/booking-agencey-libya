@@ -56,7 +56,7 @@ project plan
 [_] dashboard sub UI
    [x] search function UI
    [x] event details screen
-   [_] event stat screen
+   [x] event stat screen
    [_] add event screen
 
 [_] activites sub UI 

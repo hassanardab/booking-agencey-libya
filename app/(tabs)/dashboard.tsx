@@ -11,6 +11,7 @@ import {
   ChevronRight,
   Clock,
   Search,
+  Plus,
   Wallet,
 } from "lucide-react-native";
 import React, { useState } from "react";
@@ -277,6 +278,13 @@ const Dashboard = () => {
           ))}
         </ScrollView>
       </TouchableWithoutFeedback>
+      <TouchableOpacity 
+  style={styles.fab} 
+  onPress={() => router.push("/events/create")}
+  activeOpacity={0.8}
+>
+  <Plus size={24} color={theme.white} />
+</TouchableOpacity>
     </SafeAreaView>
   );
 };
@@ -636,6 +644,19 @@ const createStyles = (
       fontSize: 16,
       color: theme.textMain,
     },
+    fab: {
+  position: 'absolute',
+  bottom: 24,
+  right: 24,
+  width: 56,
+  height: 56,
+  borderRadius: 28,
+  backgroundColor: theme.primary,
+  justifyContent: 'center',
+  alignItems: 'center',
+  ...Shadows.card, // Using your design system shadow
+  elevation: 5, // Android specific shadow
+},
   });
 
 export default Dashboard;
