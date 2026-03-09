@@ -3,14 +3,19 @@ import { Colors, Spacing } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { getAllJournalsForEvent } from "@/services/accountingService";
 import { generateAgreementPdf } from "@/services/agreement/pdfAgreementService";
-import { getEventById } from "@/services/eventService";
+import {
+  changeToPostponedEvent,
+  deleteEvent,
+  getEventById,
+} from "@/services/eventService";
 import { generateReceiptPdf } from "@/services/pdf/pdfReceiptService";
 import { JournalEntry } from "@/types/accounting";
 import { BookingEvent } from "@/types/events";
 import { FontAwesome5, Ionicons } from "@expo/vector-icons";
 import { router, Stack, useLocalSearchParams } from "expo-router";
-import React from "react";
+import React, { useState } from "react";
 import {
+  ActivityIndicator,
   Alert,
   Dimensions,
   Linking,
@@ -28,6 +33,7 @@ export default function EventDetails() {
   const scheme = useColorScheme();
   const theme = Colors[scheme ?? "light"];
   const styles = createStyles(theme);
+  const [loading, setLoading] = useState(false);
 
   const { id } = useLocalSearchParams<{ id: string }>();
   if (!id) return null;
@@ -66,6 +72,7 @@ export default function EventDetails() {
 
   // Agreement button handler (placeholder)
   const handleAgreementPress = async (event: BookingEvent) => {
+    setLoading(true);
     try {
       const uri = await generateAgreementPdf(event.id);
       router.push({
@@ -75,7 +82,49 @@ export default function EventDetails() {
     } catch (error: any) {
       console.log("PDF ERROR:", error);
       Alert.alert("Error", error?.message || "Could not generate agreemnet");
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const handlePostpone = (event: BookingEvent) => {
+    setLoading(true);
+    try {
+      changeToPostponedEvent(event);
+      Alert.alert("Success", "Event postponed");
+    } catch (error: any) {
+      setLoading(false);
+
+      console.log("loading error:", error);
+      Alert.alert("loading error:", error?.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = () => {
+    Alert.alert("Delete Event", "Are you sure you want to delete this event?", [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Delete",
+        style: "destructive",
+        onPress: async () => {
+          setLoading(true);
+          try {
+            const success = deleteEvent(event!.id);
+            if (success) {
+              router.back();
+            } else {
+              Alert.alert("Error", "Event not found");
+            }
+          } catch (error: any) {
+            Alert.alert("Error", error?.message || "Could not delete event");
+          } finally {
+            setLoading(false);
+          }
+        },
+      },
+    ]);
   };
 
   const StatCard = ({ label, amount, color, isBold }: any) => (
@@ -287,6 +336,7 @@ export default function EventDetails() {
               icon="pause-circle-outline"
               label="Postpone"
               color={theme.warning}
+              onPress={() => handlePostpone(event)}
             />
             <ActionButton
               icon="create-outline"
@@ -306,10 +356,17 @@ export default function EventDetails() {
               label="Delete"
               color={theme.danger}
               outline
+              onPress={() => handleDelete()}
             />
           </View>
         </ScrollView>
       </View>
+      {loading && (
+        <View style={styles.loadingOverlay}>
+          <ActivityIndicator size="large" color={theme.primary} />
+          <Text style={styles.loadingText}>Loading...</Text>
+        </View>
+      )}
     </SafeAreaView>
   );
 }
@@ -440,5 +497,21 @@ const createStyles = (theme: any) =>
       color: theme.textSecondary,
       fontStyle: "italic",
       marginTop: 20,
+    },
+    loadingOverlay: {
+      position: "absolute",
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: "rgba(255,255,255,0.85)",
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    loadingText: {
+      marginTop: 10,
+      fontSize: 14,
+      color: "#1e457e",
+      fontWeight: "500",
     },
   });

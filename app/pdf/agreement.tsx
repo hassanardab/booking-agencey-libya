@@ -1,4 +1,5 @@
 //app/pdf/agreement.tsx
+import { Colors } from "@/constants/theme";
 import { Ionicons } from "@expo/vector-icons";
 import fontkit from "@pdf-lib/fontkit";
 import { Buffer } from "buffer"; // needed for base64 conversion
@@ -16,6 +17,7 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
+  useColorScheme,
   View,
 } from "react-native";
 import Pdf from "react-native-pdf";
@@ -30,6 +32,10 @@ export default function ReceiptPreview() {
   const [loading, setLoading] = useState(true);
   const [showSignature, setShowSignature] = useState(false);
   const [signing, setSigning] = useState(false);
+
+  const colorScheme = useColorScheme();
+  const theme = Colors[colorScheme ?? "light"];
+  const styles = createStyles(theme);
 
   const signatureRef = useRef<any>(null);
 
@@ -114,7 +120,7 @@ export default function ReceiptPreview() {
       const lastPage = pages[pages.length - 1];
 
       lastPage.drawImage(pngImage, {
-        x: 20,
+        x: 10,
         y: 40,
         width: pngDims.width * scale,
         height: pngDims.height * scale,
@@ -264,7 +270,7 @@ export default function ReceiptPreview() {
 
       {signing && (
         <View style={styles.signingOverlay}>
-          <ActivityIndicator size="large" color="#1e457e" />
+          <ActivityIndicator size="large" color={theme.primary} />
           <Text style={styles.signingText}>Applying signature...</Text>
         </View>
       )}
@@ -272,76 +278,172 @@ export default function ReceiptPreview() {
   );
 }
 
-const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: "#F8F9FA" },
-  container: { flex: 1, padding: 20, justifyContent: "space-between" },
-  center: { flex: 1, justifyContent: "center", alignItems: "center" },
-  previewCard: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#FFF",
-    borderRadius: 12,
-    marginVertical: 40,
-    elevation: 2,
-    shadowColor: "#000",
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-  },
-  successText: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#1e457e",
-    marginTop: 20,
-  },
-  subText: { fontSize: 14, color: "#666", marginTop: 8 },
-  footer: { flexDirection: "row", gap: 12 },
-  btn: {
-    flex: 1,
-    flexDirection: "row",
-    height: 50,
-    backgroundColor: "#1e457e",
-    borderRadius: 8,
-    justifyContent: "center",
-    alignItems: "center",
-    gap: 8,
-  },
-  btnOutline: {
-    backgroundColor: "transparent",
-    borderWidth: 1,
-    borderColor: "#1e457e",
-  },
-  btnText: { color: "#FFF", fontWeight: "600" },
-  btnOutlineText: { color: "#1e457e", fontWeight: "600" },
-  pdfViewer: {
-    flex: 1,
-    width: "100%",
-  },
-  pdfContainer: {
-    flex: 1,
-    marginVertical: 20,
-    borderRadius: 12,
-    overflow: "hidden",
-    backgroundColor: "#FFF",
-    elevation: 2,
-    shadowColor: "#000",
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-  },
-  signingOverlay: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: "rgba(255,255,255,0.85)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  signingText: {
-    marginTop: 10,
-    fontSize: 14,
-    color: "#1e457e",
-    fontWeight: "500",
-  },
-});
+const createStyles = (theme: any) =>
+  StyleSheet.create({
+    safeArea: { flex: 1, backgroundColor: theme.background },
+
+    container: { flex: 1, padding: 20, justifyContent: "space-between" },
+
+    center: { flex: 1, justifyContent: "center", alignItems: "center" },
+
+    previewCard: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: theme.surface,
+      borderRadius: 12,
+      marginVertical: 40,
+      elevation: 2,
+      shadowColor: theme.shadow,
+      shadowOpacity: 0.05,
+      shadowRadius: 10,
+    },
+
+    successText: {
+      fontSize: 18,
+      fontWeight: "600",
+      color: theme.primary,
+      marginTop: 20,
+    },
+
+    subText: {
+      fontSize: 14,
+      color: theme.textSecondary,
+      marginTop: 8,
+    },
+
+    footer: { flexDirection: "row", gap: 12 },
+
+    btn: {
+      flex: 1,
+      flexDirection: "row",
+      height: 50,
+      backgroundColor: theme.primary,
+      borderRadius: 8,
+      justifyContent: "center",
+      alignItems: "center",
+      gap: 8,
+    },
+
+    btnOutline: {
+      backgroundColor: "transparent",
+      borderWidth: 1,
+      borderColor: theme.primary,
+    },
+
+    btnText: { color: theme.white, fontWeight: "600" },
+
+    btnOutlineText: {
+      color: theme.primary,
+      fontWeight: "600",
+    },
+
+    pdfViewer: {
+      flex: 1,
+      width: "100%",
+    },
+
+    pdfContainer: {
+      flex: 1,
+      marginVertical: 20,
+      borderRadius: 12,
+      overflow: "hidden",
+      backgroundColor: theme.surface,
+      elevation: 2,
+      shadowColor: theme.shadow,
+      shadowOpacity: 0.05,
+      shadowRadius: 10,
+    },
+
+    signingOverlay: {
+      position: "absolute",
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: "rgba(255,255,255,0.85)",
+      justifyContent: "center",
+      alignItems: "center",
+    },
+
+    signingText: {
+      marginTop: 10,
+      fontSize: 14,
+      color: theme.primary,
+      fontWeight: "500",
+    },
+  });
+
+// const styles = StyleSheet.create({
+//   safeArea: { flex: 1, backgroundColor: "#F8F9FA" },
+//   container: { flex: 1, padding: 20, justifyContent: "space-between" },
+//   center: { flex: 1, justifyContent: "center", alignItems: "center" },
+//   previewCard: {
+//     flex: 1,
+//     justifyContent: "center",
+//     alignItems: "center",
+//     backgroundColor: "#FFF",
+//     borderRadius: 12,
+//     marginVertical: 40,
+//     elevation: 2,
+//     shadowColor: "#000",
+//     shadowOpacity: 0.05,
+//     shadowRadius: 10,
+//   },
+//   successText: {
+//     fontSize: 18,
+//     fontWeight: "600",
+//     color: "#1e457e",
+//     marginTop: 20,
+//   },
+//   subText: { fontSize: 14, color: "#666", marginTop: 8 },
+//   footer: { flexDirection: "row", gap: 12 },
+//   btn: {
+//     flex: 1,
+//     flexDirection: "row",
+//     height: 50,
+//     backgroundColor: "#1e457e",
+//     borderRadius: 8,
+//     justifyContent: "center",
+//     alignItems: "center",
+//     gap: 8,
+//   },
+//   btnOutline: {
+//     backgroundColor: "transparent",
+//     borderWidth: 1,
+//     borderColor: "#1e457e",
+//   },
+//   btnText: { color: "#FFF", fontWeight: "600" },
+//   btnOutlineText: { color: "#1e457e", fontWeight: "600" },
+//   pdfViewer: {
+//     flex: 1,
+//     width: "100%",
+//   },
+//   pdfContainer: {
+//     flex: 1,
+//     marginVertical: 20,
+//     borderRadius: 12,
+//     overflow: "hidden",
+//     backgroundColor: "#FFF",
+//     elevation: 2,
+//     shadowColor: "#000",
+//     shadowOpacity: 0.05,
+//     shadowRadius: 10,
+//   },
+//   signingOverlay: {
+//     position: "absolute",
+//     top: 0,
+//     left: 0,
+//     right: 0,
+//     bottom: 0,
+//     backgroundColor: "rgba(255,255,255,0.85)",
+//     justifyContent: "center",
+//     alignItems: "center",
+//   },
+//   signingText: {
+//     marginTop: 10,
+//     fontSize: 14,
+//     color: "#1e457e",
+//     fontWeight: "500",
+//   },
+// });

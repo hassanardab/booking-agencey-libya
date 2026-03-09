@@ -31,3 +31,25 @@ export function getUpcomingEvents(): BookingEvent[] {
 export function getPostponedEvents(): BookingEvent[] {
   return MOCK_EVENTS.filter((e) => e.status === "postponed");
 }
+
+/**
+ * Change event to postponed
+ */
+export function changeToPostponedEvent(event: BookingEvent): BookingEvent {
+  return {
+    ...event,
+    status: "postponed",
+  };
+}
+
+/**
+ * Delete event
+ */
+export function deleteEvent(eventId: string): boolean {
+  const index = MOCK_EVENTS.findIndex((event) => event.id === eventId);
+  if (index !== -1) {
+    MOCK_EVENTS.splice(index, 1);
+    return true;
+  }
+  return false;
+}
