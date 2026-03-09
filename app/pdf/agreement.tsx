@@ -1,13 +1,16 @@
 //app/pdf/receipt.tsx
-import { getEventById } from "@/services/eventService";
+
 import { Ionicons } from "@expo/vector-icons";
-import { Buffer } from "buffer"; // ✅ this is required in React Native
-import * as FileSystem from "expo-file-system";
+import fontkit from "@pdf-lib/fontkit";
+import { Buffer } from "buffer"; // needed for base64 conversion
+import { Asset } from "expo-asset";
+import * as FileSystem from "expo-file-system"; // new FileSystem API
 import * as Print from "expo-print";
 import { Stack, useLocalSearchParams } from "expo-router";
 import * as Sharing from "expo-sharing";
-import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
+import { PDFDocument } from "pdf-lib";
 import React, { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
   Alert,
@@ -16,200 +19,131 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import Pdf from "react-native-pdf";
 import { SafeAreaView } from "react-native-safe-area-context";
 import SignatureScreen from "react-native-signature-canvas";
 
-import { getAllJournalsForEvent } from "@/services/accountingService";
-import Pdf from "react-native-pdf";
+export default function ReceiptPreview() {
+  const { pdfUri, entryId } = useLocalSearchParams();
+  const { t } = useTranslation();
 
-export default function AgreementPreview() {
-  const { eventId, entryId } = useLocalSearchParams();
-  const [pdfUri, setPdfUri] = useState<string | null>(null);
+  const [uri, setUri] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [showSignature, setShowSignature] = useState(false);
-  const signatureRef = useRef<any>(null);
   const [signing, setSigning] = useState(false);
 
+  const signatureRef = useRef<any>(null);
+
   useEffect(() => {
-    generateAndLoadPdf();
-  }, [eventId]);
-
-  const generateAndLoadPdf = async () => {
-    try {
-      setLoading(true);
-      // 1. Fetch Data
-      const event = getEventById(eventId as string);
-      const journalEntries = getAllJournalsForEvent(event?.id as string);
-
-      // 2. Create PDF Logic
-      const pdfDoc = await PDFDocument.create();
-      const page = pdfDoc.addPage([595, 842]); // Custom size or standard [595, 842] (A4)
-      const { width, height } = page.getSize();
-      const font = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
-      const regularFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
-
-      // --- Draw Minimalist Header ---
-      page.drawText("AGREEMENT", {
-        x: 50,
-        y: height - 50,
-        size: 24,
-        font,
-        color: rgb(0.12, 0.27, 0.49),
-      });
-      // page.drawText(`No: ${journalEntry.receiptNumber}`, {
-      //   x: width - 180,
-      //   y: height - 50,
-      //   size: 12,
-      //   font: regularFont,
-      // });
-
-      // --- Draw Divider ---
-      page.drawLine({
-        start: { x: 50, y: height - 70 },
-        end: { x: width - 50, y: height - 70 },
-        thickness: 1,
-        color: rgb(0.9, 0.9, 0.9),
-      });
-
-      // --- Content Sections ---
-      page.drawText("Event Details:", {
-        x: 50,
-        y: height - 110,
-        size: 14,
-        font,
-      });
-      page.drawText(`Event ID: ${eventId}`, {
-        x: 50,
-        y: height - 135,
-        size: 12,
-        font: regularFont,
-      });
-      // page.drawText(`Date: ${journalEntry.date}`, {
-      //   x: 50,
-      //   y: height - 155,
-      //   size: 12,
-      //   font: regularFont,
-      // });
-
-      // --- Total Amount Box ---
-      page.drawRectangle({
-        x: 50,
-        y: 100,
-        width: width - 100,
-        height: 50,
-        color: rgb(0.96, 0.97, 0.98),
-      });
-      page.drawText("Total Amount Paid:", { x: 70, y: 120, size: 14, font });
-      // page.drawText(`$${journalEntry.amount.toFixed(2)}`, {
-      //   x: width - 150,
-      //   y: 120,
-      //   size: 18,
-      //   font,
-      //   color: rgb(0.12, 0.27, 0.49),
-      // });
-
-      try {
-        const pdfBytes = await pdfDoc.save();
-
-        const base64 = Buffer.from(pdfBytes).toString("base64");
-
-        const file = new FileSystem.File(
-          FileSystem.Paths.cache,
-          `receipt_${entryId}.pdf`,
-        );
-        await file.write(base64, { encoding: "base64" });
-
-        setPdfUri(file.uri);
-      } catch (err) {
-        console.error("PDF save error:", err);
-        throw err;
-      }
-    } catch (error) {
-      console.error(error);
-      Alert.alert("Error", "Failed to generate native PDF.");
-    } finally {
-      setLoading(false);
+    if (pdfUri) {
+      setUri(pdfUri as string);
     }
-  };
+    setLoading(false);
+  }, [pdfUri]);
 
   const sharePdf = async () => {
-    if (pdfUri) {
-      await Sharing.shareAsync(pdfUri, {
-        UTI: ".pdf",
-        mimeType: "application/pdf",
-      });
-    }
+    if (!uri) return;
+    await Sharing.shareAsync(uri, {
+      UTI: ".pdf",
+      mimeType: "application/pdf",
+    });
   };
 
   const printPdf = async () => {
     try {
-      if (!pdfUri) return;
-
+      if (!uri) return;
       await Print.printAsync({
-        uri: pdfUri,
+        uri,
         orientation: Print.Orientation.portrait,
       });
     } catch (error) {
-      console.error("Print error:", error);
-      Alert.alert("Error", "Unable to print the PDF.");
+      console.error(error);
+      Alert.alert("Error", "Unable to print PDF.");
     }
   };
-  const signPdf = async () => {
+
+  const signPdf = () => {
     setShowSignature(true);
   };
+
   const handleSignature = async (signature: string) => {
     try {
       setShowSignature(false);
-
       if (!pdfUri) return;
 
-      const existingFile = new FileSystem.File(pdfUri);
+      setSigning(true);
+
+      // 1. Load existing PDF as base64 using new FileSystem API
+      const existingFile = new FileSystem.File(pdfUri as string);
       const existingBase64 = await existingFile.base64();
 
+      // 2. Load PDF with pdf-lib
       const pdfDoc = await PDFDocument.load(
         Buffer.from(existingBase64, "base64"),
       );
 
-      const pages = pdfDoc.getPages();
-      const lastPage = pages[pages.length - 1];
-
+      // 3. Embed signature image
       const signatureBase64 = signature.replace("data:image/png;base64,", "");
-
       const pngImage = await pdfDoc.embedPng(signatureBase64);
 
+      // 4. Scale image to fit nicely
       const MAX_SIGNATURE_WIDTH = 140;
-
       const pngDims = pngImage.scale(1);
       const scale = MAX_SIGNATURE_WIDTH / pngDims.width;
 
+      // register fontkit
+      pdfDoc.registerFontkit(fontkit);
+
+      // load font asset
+      const fontAsset = Asset.fromModule(
+        require("@/assets/fonts/NotoSans-Regular.ttf"),
+      );
+
+      await fontAsset.downloadAsync();
+
+      // read font file
+      const fontFile = new FileSystem.File(fontAsset.localUri ?? fontAsset.uri);
+      const fontBytes = await fontFile.arrayBuffer();
+
+      // embed font
+      const notoFont = await pdfDoc.embedFont(fontBytes);
+
+      // 5. Embed standard font (Helvetica)
+
+      // 6. Draw signature on last page
+      const pages = pdfDoc.getPages();
+      const lastPage = pages[pages.length - 1];
+
       lastPage.drawImage(pngImage, {
-        x: 10,
+        x: 300,
         y: 5,
         width: pngDims.width * scale,
         height: pngDims.height * scale,
       });
 
-      lastPage.drawText("Signed electronically", {
-        x: 50,
-        y: 30,
-        size: 10,
-        font: await pdfDoc.embedFont(StandardFonts.Helvetica),
-        color: rgb(0.3, 0.3, 0.3),
-      });
+      // 7. Add a small caption
 
+      // lastPage.drawText(t("pdf.receipt.singed"), {
+      //   x: 250,
+      //   y: 80,
+      //   size: 10,
+      //   font: notoFont,
+      //   color: rgb(0.3, 0.3, 0.3),
+      // });
+
+      // 8. Save the modified PDF
       const pdfBytes = await pdfDoc.save();
+      const newBase64 = Buffer.from(pdfBytes).toString("base64");
 
-      const base64 = Buffer.from(pdfBytes).toString("base64");
-
+      // 9. Write to cache using new FileSystem API
       const signedFile = new FileSystem.File(
         FileSystem.Paths.cache,
         `receipt_signed_${entryId}.pdf`,
       );
+      await signedFile.write(newBase64, { encoding: "base64" });
 
-      await signedFile.write(base64, { encoding: "base64" });
-
-      setPdfUri(signedFile.uri);
-
+      // 10. Update URI to show the signed PDF
+      setUri(signedFile.uri);
       // Alert.alert("Success", "PDF signed successfully.");
     } catch (err) {
       console.error(err);
@@ -217,6 +151,15 @@ export default function AgreementPreview() {
     } finally {
       setSigning(false);
     }
+  };
+
+  const clearSignature = () => {
+    signatureRef.current?.clearSignature();
+  };
+
+  const confirmSignature = () => {
+    setSigning(true);
+    signatureRef.current?.readSignature();
   };
 
   if (loading) {
@@ -227,14 +170,6 @@ export default function AgreementPreview() {
       </View>
     );
   }
-  const clearSignature = () => {
-    signatureRef.current?.clearSignature();
-  };
-
-  const confirmSignature = () => {
-    setSigning(true);
-    signatureRef.current?.readSignature();
-  };
 
   return (
     <SafeAreaView style={styles.safeArea} edges={["bottom"]}>
@@ -250,14 +185,13 @@ export default function AgreementPreview() {
           }}
         />
 
-        {/* ✅ This block replaces your static placeholder view */}
         <View style={styles.pdfContainer}>
-          {pdfUri ? (
+          {uri ? (
             <Pdf
               trustAllCerts={false}
-              source={{ uri: pdfUri }}
+              source={{ uri }}
               style={styles.pdfViewer}
-              onLoadComplete={(numberOfPages: any) => {
+              onLoadComplete={(numberOfPages) => {
                 console.log(`PDF rendered: ${numberOfPages} pages`);
               }}
               onError={(error) => {
@@ -306,6 +240,7 @@ export default function AgreementPreview() {
           )}
         </View>
       </View>
+
       {showSignature && (
         <View style={{ height: 220 }}>
           <SignatureScreen
@@ -315,11 +250,12 @@ export default function AgreementPreview() {
             autoClear={false}
             descriptionText="Sign below"
             webStyle={`
-        .m-signature-pad--footer {display:none;}
-      `}
+              .m-signature-pad--footer { display: none; }
+            `}
           />
         </View>
       )}
+
       {signing && (
         <View style={styles.signingOverlay}>
           <ActivityIndicator size="large" color="#1e457e" />
@@ -379,7 +315,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginVertical: 20,
     borderRadius: 12,
-    overflow: "hidden", // Ensures the PDF respects the container's rounded corners
+    overflow: "hidden",
     backgroundColor: "#FFF",
     elevation: 2,
     shadowColor: "#000",
@@ -396,7 +332,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-
   signingText: {
     marginTop: 10,
     fontSize: 14,

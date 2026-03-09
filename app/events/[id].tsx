@@ -2,9 +2,11 @@
 import { Colors, Spacing } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { getAllJournalsForEvent } from "@/services/accountingService";
+import { generateAgreementPdf } from "@/services/agreement/pdfAgreementService";
 import { getEventById } from "@/services/eventService";
 import { generateReceiptPdf } from "@/services/pdf/pdfReceiptService";
 import { JournalEntry } from "@/types/accounting";
+import { BookingEvent } from "@/types/events";
 import { FontAwesome5, Ionicons } from "@expo/vector-icons";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import React from "react";
@@ -59,6 +61,20 @@ export default function EventDetails() {
     } catch (error: any) {
       console.log("PDF ERROR:", error);
       Alert.alert("Error", error?.message || "Could not generate receipt");
+    }
+  };
+
+  // Agreement button handler (placeholder)
+  const handleAgreementPress = async (event: BookingEvent) => {
+    try {
+      const uri = await generateAgreementPdf(event.id);
+      router.push({
+        pathname: "/pdf/agreement",
+        params: { pdfUri: uri },
+      });
+    } catch (error: any) {
+      console.log("PDF ERROR:", error);
+      Alert.alert("Error", error?.message || "Could not generate agreemnet");
     }
   };
 
@@ -265,14 +281,7 @@ export default function EventDetails() {
               icon="document-text-outline"
               label="Contract"
               color={theme.primary}
-              onPress={() =>
-                router.push({
-                  pathname: "/pdf/agreement",
-                  params: {
-                    eventId: event.id,
-                  },
-                })
-              }
+              onPress={() => handleAgreementPress(event)}
             />
             <ActionButton
               icon="pause-circle-outline"

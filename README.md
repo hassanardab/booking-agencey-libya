@@ -33,6 +33,7 @@ When you're ready, run:
 npm run reset-project
 ```
 
+# Welcome to your Expo app 👋
 This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
 
 ## Learn more
@@ -50,55 +51,53 @@ Join our community of developers creating universal apps.
 - [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
 
 ==========
-## project plan & phases
-- Phase #1 UI
-[x][x] UI main 3 page with themes
-[x][x] search function UI
-[x][x] event details screen
-[x][x] event stat screen
-[x][x] add event screen
-[x][x] Calendar screen
+## Phase #1 UI
+- [x][x] UI main 3 page with themes
+- [x][x] search function UI
+- [x][x] event details screen
+- [x][x] event stat screen
+- [x][x] add event screen
+- [x][x] Calendar screen
 
-[x][x] generate pdf receipt
-      [x]1 page
-      [x]landscape
-      [x]page A5
-      [x]receipt layout ok
-      [x]agreement layout ok
-      [x]save pdf
-      [x]privew
-      [x]content
-[x][_] generate pdf agreement
-      [_]design
-      [_]content
-[x][x] sign the pdf agreement
+- [x][x] generate pdf receipt
+- [x][x]1 page
+- [x][x]landscape
+- [x][x]page A5
+- [x][x]receipt layout ok
+- [x][x]agreement layout ok
+- [x][x]save pdf
+- [x][x]privew
+- [x][x]content
+- [x][x] sign the pdf agreement
 
-[_][_] week day picker
+- [x][_] generate pdf agreement
 
-[_][_] public page UI
-[_][_] contorl panel for public page
+- [_][_] week day picker
 
-[_][_] all dashboard sub UI done
-[_][_] activites sub UI
-[_][_] settings sub UI
-[_][_] public page sub UI
+- [_][_] public page UI
+- [_][_] contorl panel for public page
 
-[_][_] public page view
+- [_][_] all dashboard sub UI done
+- [_][_] activites sub UI
+- [_][_] settings sub UI
+- [_][_] public page sub UI
 
-[_][_] sign up
-[_][_] login page
-[_][_] forget password page
+- [_][_] public page view
+
+- [_][_] sign up
+- [_][_] login page
+- [_][_] forget password page
 
 - Phase #2 functions
-[_][_] signing PDFs 
-[_][_] enable firebase push notification and app notifications 
-[_][_] supabase storage
-[_][_] firebase authintication 
-[_][_] firebase firestore 
-[_][_] supabase database 
-[_][_] GPS, location and maps
-[_][_] take pictures, upload an image or upload a file 
-[_][_] scan qr code/barcode
+- [_][_] signing PDFs 
+- [_][_] enable firebase push notification and app notifications 
+- [_][_] supabase storage
+- [_][_] firebase authintication 
+- [_][_] firebase firestore 
+- [_][_] supabase database 
+- [_][_] GPS, location and maps
+- [_][_] take pictures, upload an image or upload a file 
+- [_][_] scan qr code/barcode
 
 - Phase #3 Backend & Testing
-[_][_] generating receipt takes much time due to logo image
+- [_][_] generating receipt takes much time due to logo image
