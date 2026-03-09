@@ -1,4 +1,4 @@
-//app/(tabs)/dashboard.tsx
+//app/(tabs)/index.tsx
 import SearchOverlay from "@/components/dashboard/SearchOverlay";
 import { Colors, Radius, Shadows, Spacing } from "@/constants/theme";
 import { MOCK_EVENTS } from "@/data/mockEvents";
@@ -181,7 +181,7 @@ const Dashboard = () => {
             <Text style={styles.sectionTitle}>
               {t("dashboard.title", "Dashboard")}
             </Text>
-            <TouchableOpacity onPress={() => router.push(`/calendar`)}>
+            <TouchableOpacity onPress={() => router.push(`/calendar/calendar`)}>
               <Text style={styles.viewAll}>
                 {t("dashboard.view.calendar", "View Calendar")}
               </Text>

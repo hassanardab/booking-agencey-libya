@@ -17,28 +17,24 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import Pdf from "react-native-pdf"; 
- 
-export default function ReceiptPreview() {
-  const { eventId, entryId } = useLocalSearchParams();
+import { getAllJournalsForEvent } from "@/services/accountingService";
+import Pdf from "react-native-pdf";
+
+export default function AgreementPreview() {
+  const { eventId } = useLocalSearchParams();
   const [pdfUri, setPdfUri] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     generateAndLoadPdf();
-  }, [eventId, entryId]);
+  }, [eventId]);
 
   const generateAndLoadPdf = async () => {
     try {
       setLoading(true);
       // 1. Fetch Data
       const event = getEventById(eventId as string);
-      const journalEntry = {
-        id: entryId,
-        receiptNumber: "REC-99812",
-        date: new Date().toLocaleDateString(),
-        amount: event?.amount || 0,
-      };
+      const journalEntries = getAllJournalsForEvent(event?.id as string);
 
       // 2. Create PDF Logic
       const pdfDoc = await PDFDocument.create();
@@ -48,19 +44,19 @@ export default function ReceiptPreview() {
       const regularFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
 
       // --- Draw Minimalist Header ---
-      page.drawText("RECEIPT", {
+      page.drawText("AGREEMENT", {
         x: 50,
         y: height - 50,
         size: 24,
         font,
         color: rgb(0.12, 0.27, 0.49),
       });
-      page.drawText(`No: ${journalEntry.receiptNumber}`, {
-        x: width - 180,
-        y: height - 50,
-        size: 12,
-        font: regularFont,
-      });
+      // page.drawText(`No: ${journalEntry.receiptNumber}`, {
+      //   x: width - 180,
+      //   y: height - 50,
+      //   size: 12,
+      //   font: regularFont,
+      // });
 
       // --- Draw Divider ---
       page.drawLine({
@@ -99,13 +95,13 @@ export default function ReceiptPreview() {
         color: rgb(0.96, 0.97, 0.98),
       });
       page.drawText("Total Amount Paid:", { x: 70, y: 120, size: 14, font });
-      page.drawText(`$${journalEntry.amount.toFixed(2)}`, {
-        x: width - 150,
-        y: 120,
-        size: 18,
-        font,
-        color: rgb(0.12, 0.27, 0.49),
-      });
+      // page.drawText(`$${journalEntry.amount.toFixed(2)}`, {
+      //   x: width - 150,
+      //   y: 120,
+      //   size: 18,
+      //   font,
+      //   color: rgb(0.12, 0.27, 0.49),
+      // });
 
       try {
         const pdfBytes = await pdfDoc.save();
@@ -114,7 +110,7 @@ export default function ReceiptPreview() {
 
         const file = new FileSystem.File(
           FileSystem.Paths.cache,
-          `receipt_${entryId}.pdf`,
+          `agreement_${event?.customerName}.pdf`,
         );
         await file.write(base64, { encoding: "base64" });
 
@@ -154,7 +150,7 @@ export default function ReceiptPreview() {
       <View style={styles.container}>
         <Stack.Screen
           options={{
-            title: "Receipt Ready",
+            title: "Agreement Ready",
             headerRight: () => (
               <TouchableOpacity onPress={sharePdf}>
                 <Ionicons name="share-outline" size={24} color="#1e457e" />

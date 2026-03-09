@@ -226,14 +226,6 @@ export default function EventDetails() {
                         {/* Fixed receipt button – now visible and clickable */}
                         <TouchableOpacity
                           style={styles.receiptBtn}
-                          // onPress={() =>
-                          //   Alert.alert(
-                          //     "Receipt",
-                          //     `Print receipt for ${entry.currency || "USD"} ${amount.toFixed(
-                          //       2,
-                          //     )}\nEntry ID: ${entry.id}`,
-                          //   )
-                          // }
                           onPress={() =>
                             router.push({
                               pathname: "/pdf/receipt",
@@ -273,6 +265,14 @@ export default function EventDetails() {
               icon="document-text-outline"
               label="Contract"
               color={theme.primary}
+              onPress={() =>
+                router.push({
+                  pathname: "/pdf/agreement",
+                  params: {
+                    eventId: event.id,
+                  },
+                })
+              }
             />
             <ActionButton
               icon="pause-circle-outline"

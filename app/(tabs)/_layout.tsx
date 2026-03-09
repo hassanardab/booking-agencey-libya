@@ -1,3 +1,4 @@
+// before _layout.tsx
 import { Tabs } from "expo-router";
 import React from "react";
 
@@ -18,7 +19,7 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen
-        name="dashboard"
+        name="index"
         options={{
           title: "Dashboard",
           tabBarIcon: ({ color }) => (

@@ -1,3 +1,4 @@
+//app/index.tsx
 import { Colors, Radius, Shadows, Spacing } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { router } from "expo-router";

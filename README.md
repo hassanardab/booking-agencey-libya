@@ -60,6 +60,13 @@ Join our community of developers creating universal apps.
 [x][x] Calendar screen
 
 [x][_] generate pdf receipt
+      [x]1 page
+      [x]landscape
+      [_]page A5
+      [_]receipt layout ok
+      [_]agreement layout ok
+      [_]save pdf
+      [_]privew
 [_][_] generate pdf agreement
 [_][_] sign the pdf agreement
 

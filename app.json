@@ -9,7 +9,13 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "ExpoLocalization_supportsRTL": true,
+        "CFBundleLocalizations": ["en", "ar", "en", "ar"],
+        "ITSAppUsesNonExemptEncryption": false
+      },
+      "bundleIdentifier": "com.blackcyg.bookingagenceylibya"
     },
     "android": {
       "adaptiveIcon": {
@@ -18,8 +24,9 @@
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
-      "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      // "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false,
+      "package": "com.blackcyg.bookingagenceylibya"
     },
     "extra": {
       "supportsRTL": true,
@@ -42,18 +49,16 @@
       [
         "expo-localization",
         {
-          "supportedLocales": [
-            "en",
-            "ar"
-          ]
+          "supportedLocales": ["en", "ar"]
         }
       ],
-      "@react-native-community/datetimepicker"
+      "@react-native-community/datetimepicker",
+      "expo-asset"
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
     },
-    "owner": "cygHas"
+    "owner": "blackcyg"
   }
 }
