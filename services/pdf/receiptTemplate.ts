@@ -52,13 +52,13 @@ export async function buildReceiptHtml(event: any, entry: any, logo: string) {
         align-items: flex-start;
       }
       .company-name {
-        font-size: 28px;
+        font-size: 20px;
         font-weight: 900;
         letter-spacing: -0.5px;
         color: #1e3a8a;
       }
       .slogan {
-        font-size: 18px;
+        font-size: 14px;
         font-weight: 700;
         color: #1e457e;
         opacity: 0.8;
@@ -156,12 +156,12 @@ export async function buildReceiptHtml(event: any, entry: any, logo: string) {
         margin-bottom: 4px;
       }
       .grid-cell .value {
-        font-size: 20px;
+        font-size: 18px;
         font-weight: 900;
         color: #1e457e;
       }
       .grid-cell .value small {
-        font-size: 14px;
+        font-size: 12px;
         font-weight: 700;
         color: #6b7280;
         margin-right: 4px;
@@ -336,10 +336,6 @@ export async function buildReceiptHtml(event: any, entry: any, logo: string) {
               <div class="signature-row">
                 <div class="signature-field">
                   <span class="label">توقيع المستلم:</span>
-                  <div class="signature-line"></div>
-                </div>
-                <div class="signature-field">
-                  <span class="label">توقيع الزبون:</span>
                   <div class="signature-line"></div>
                 </div>
               </div>

@@ -59,7 +59,7 @@ Join our community of developers creating universal apps.
 [x][x] add event screen
 [x][x] Calendar screen
 
-[x][_] generate pdf receipt
+[x][x] generate pdf receipt
       [x]1 page
       [x]landscape
       [x]page A5
@@ -67,8 +67,9 @@ Join our community of developers creating universal apps.
       [x]agreement layout ok
       [x]save pdf
       [x]privew
-      [_]content
+      [x]content
 [x][_] generate pdf agreement
+      [_]design
       [_]content
 [x][x] sign the pdf agreement
 

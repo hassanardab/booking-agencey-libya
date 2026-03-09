@@ -17,6 +17,8 @@ const resources = {
       settings: "Settings",
       langName: "English",
       bookingLogic: "Booking Logic",
+
+      "pdf.receipt.singed": "Signed electronically",
     },
   },
   ar: {
@@ -28,10 +30,12 @@ const resources = {
       "dashboard.view.calendar": "فتح التقويم",
       "dashboard.upcoming.events": "الحجوزات القادمة",
       "dashboard.postponed.events": "الحجوزات المؤجلة",
-      
+
       settings: "الإعدادات",
       langName: "العربية",
       bookingLogic: "منطق الحجز",
+
+      "pdf.receipt.singed": "توقيع إلكتروني",
     },
   },
 };

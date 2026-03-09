@@ -7,17 +7,11 @@
     "icon": "./assets/images/icon.png",
     "scheme": "bookingagenceylibya",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
         "ExpoLocalization_supportsRTL": true,
-        "CFBundleLocalizations": [
-          "en",
-          "ar",
-          "en",
-          "ar"
-        ],
+        "CFBundleLocalizations": ["en", "ar", "en", "ar"],
         "ITSAppUsesNonExemptEncryption": false
       },
       "bundleIdentifier": "com.blackcyg.bookingagenceylibya"
@@ -53,10 +47,7 @@
       [
         "expo-localization",
         {
-          "supportedLocales": [
-            "en",
-            "ar"
-          ]
+          "supportedLocales": ["en", "ar"]
         }
       ],
       "@react-native-community/datetimepicker",

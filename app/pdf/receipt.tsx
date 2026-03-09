@@ -1,11 +1,16 @@
+//app/pdf/receipt.tsx
+
 import { Ionicons } from "@expo/vector-icons";
+import fontkit from "@pdf-lib/fontkit";
 import { Buffer } from "buffer"; // needed for base64 conversion
+import { Asset } from "expo-asset";
 import * as FileSystem from "expo-file-system"; // new FileSystem API
 import * as Print from "expo-print";
 import { Stack, useLocalSearchParams } from "expo-router";
 import * as Sharing from "expo-sharing";
-import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
+import { PDFDocument } from "pdf-lib";
 import React, { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
   Alert,
@@ -20,6 +25,7 @@ import SignatureScreen from "react-native-signature-canvas";
 
 export default function ReceiptPreview() {
   const { pdfUri, entryId } = useLocalSearchParams();
+  const { t } = useTranslation();
 
   const [uri, setUri] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -85,27 +91,45 @@ export default function ReceiptPreview() {
       const pngDims = pngImage.scale(1);
       const scale = MAX_SIGNATURE_WIDTH / pngDims.width;
 
+      // register fontkit
+      pdfDoc.registerFontkit(fontkit);
+
+      // load font asset
+      const fontAsset = Asset.fromModule(
+        require("@/assets/fonts/NotoSans-Regular.ttf"),
+      );
+
+      await fontAsset.downloadAsync();
+
+      // read font file
+      const fontFile = new FileSystem.File(fontAsset.localUri ?? fontAsset.uri);
+      const fontBytes = await fontFile.arrayBuffer();
+
+      // embed font
+      const notoFont = await pdfDoc.embedFont(fontBytes);
+
       // 5. Embed standard font (Helvetica)
-      const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
 
       // 6. Draw signature on last page
       const pages = pdfDoc.getPages();
       const lastPage = pages[pages.length - 1];
+
       lastPage.drawImage(pngImage, {
-        x: 10,
+        x: 300,
         y: 5,
         width: pngDims.width * scale,
         height: pngDims.height * scale,
       });
 
       // 7. Add a small caption
-      lastPage.drawText("Signed electronically", {
-        x: 50,
-        y: 30,
-        size: 10,
-        font: helveticaFont,
-        color: rgb(0.3, 0.3, 0.3),
-      });
+
+      // lastPage.drawText(t("pdf.receipt.singed"), {
+      //   x: 250,
+      //   y: 80,
+      //   size: 10,
+      //   font: notoFont,
+      //   color: rgb(0.3, 0.3, 0.3),
+      // });
 
       // 8. Save the modified PDF
       const pdfBytes = await pdfDoc.save();
@@ -120,7 +144,7 @@ export default function ReceiptPreview() {
 
       // 10. Update URI to show the signed PDF
       setUri(signedFile.uri);
-      Alert.alert("Success", "PDF signed successfully.");
+      // Alert.alert("Success", "PDF signed successfully.");
     } catch (err) {
       console.error(err);
       Alert.alert("Error", "Failed to sign PDF.");
