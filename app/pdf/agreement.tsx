@@ -3,10 +3,11 @@ import { getEventById } from "@/services/eventService";
 import { Ionicons } from "@expo/vector-icons";
 import { Buffer } from "buffer"; // ✅ this is required in React Native
 import * as FileSystem from "expo-file-system";
+import * as Print from "expo-print";
 import { Stack, useLocalSearchParams } from "expo-router";
 import * as Sharing from "expo-sharing";
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -16,14 +17,18 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import SignatureScreen from "react-native-signature-canvas";
 
 import { getAllJournalsForEvent } from "@/services/accountingService";
 import Pdf from "react-native-pdf";
 
 export default function AgreementPreview() {
-  const { eventId } = useLocalSearchParams();
+  const { eventId, entryId } = useLocalSearchParams();
   const [pdfUri, setPdfUri] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showSignature, setShowSignature] = useState(false);
+  const signatureRef = useRef<any>(null);
+  const [signing, setSigning] = useState(false);
 
   useEffect(() => {
     generateAndLoadPdf();
@@ -38,7 +43,7 @@ export default function AgreementPreview() {
 
       // 2. Create PDF Logic
       const pdfDoc = await PDFDocument.create();
-      const page = pdfDoc.addPage([595.28, 841.89]); // Custom size or standard [595, 842] (A4)
+      const page = pdfDoc.addPage([595, 842]); // Custom size or standard [595, 842] (A4)
       const { width, height } = page.getSize();
       const font = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
       const regularFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
@@ -110,7 +115,7 @@ export default function AgreementPreview() {
 
         const file = new FileSystem.File(
           FileSystem.Paths.cache,
-          `agreement_${event?.customerName}.pdf`,
+          `receipt_${entryId}.pdf`,
         );
         await file.write(base64, { encoding: "base64" });
 
@@ -136,6 +141,84 @@ export default function AgreementPreview() {
     }
   };
 
+  const printPdf = async () => {
+    try {
+      if (!pdfUri) return;
+
+      await Print.printAsync({
+        uri: pdfUri,
+        orientation: Print.Orientation.portrait,
+      });
+    } catch (error) {
+      console.error("Print error:", error);
+      Alert.alert("Error", "Unable to print the PDF.");
+    }
+  };
+  const signPdf = async () => {
+    setShowSignature(true);
+  };
+  const handleSignature = async (signature: string) => {
+    try {
+      setShowSignature(false);
+
+      if (!pdfUri) return;
+
+      const existingFile = new FileSystem.File(pdfUri);
+      const existingBase64 = await existingFile.base64();
+
+      const pdfDoc = await PDFDocument.load(
+        Buffer.from(existingBase64, "base64"),
+      );
+
+      const pages = pdfDoc.getPages();
+      const lastPage = pages[pages.length - 1];
+
+      const signatureBase64 = signature.replace("data:image/png;base64,", "");
+
+      const pngImage = await pdfDoc.embedPng(signatureBase64);
+
+      const MAX_SIGNATURE_WIDTH = 140;
+
+      const pngDims = pngImage.scale(1);
+      const scale = MAX_SIGNATURE_WIDTH / pngDims.width;
+
+      lastPage.drawImage(pngImage, {
+        x: 10,
+        y: 5,
+        width: pngDims.width * scale,
+        height: pngDims.height * scale,
+      });
+
+      lastPage.drawText("Signed electronically", {
+        x: 50,
+        y: 30,
+        size: 10,
+        font: await pdfDoc.embedFont(StandardFonts.Helvetica),
+        color: rgb(0.3, 0.3, 0.3),
+      });
+
+      const pdfBytes = await pdfDoc.save();
+
+      const base64 = Buffer.from(pdfBytes).toString("base64");
+
+      const signedFile = new FileSystem.File(
+        FileSystem.Paths.cache,
+        `receipt_signed_${entryId}.pdf`,
+      );
+
+      await signedFile.write(base64, { encoding: "base64" });
+
+      setPdfUri(signedFile.uri);
+
+      // Alert.alert("Success", "PDF signed successfully.");
+    } catch (err) {
+      console.error(err);
+      Alert.alert("Error", "Failed to sign PDF.");
+    } finally {
+      setSigning(false);
+    }
+  };
+
   if (loading) {
     return (
       <View style={styles.center}>
@@ -144,13 +227,21 @@ export default function AgreementPreview() {
       </View>
     );
   }
+  const clearSignature = () => {
+    signatureRef.current?.clearSignature();
+  };
+
+  const confirmSignature = () => {
+    setSigning(true);
+    signatureRef.current?.readSignature();
+  };
 
   return (
     <SafeAreaView style={styles.safeArea} edges={["bottom"]}>
       <View style={styles.container}>
         <Stack.Screen
           options={{
-            title: "Agreement Ready",
+            title: "Receipt Ready",
             headerRight: () => (
               <TouchableOpacity onPress={sharePdf}>
                 <Ionicons name="share-outline" size={24} color="#1e457e" />
@@ -182,21 +273,59 @@ export default function AgreementPreview() {
         </View>
 
         <View style={styles.footer}>
-          <TouchableOpacity
-            style={[styles.btn, styles.btnOutline]}
-            onPress={sharePdf}
-          >
-            <Ionicons name="download-outline" size={20} color="#1e457e" />
-            <Text style={styles.btnOutlineText}>Save or Share</Text>
-          </TouchableOpacity>
+          {showSignature ? (
+            <>
+              <TouchableOpacity
+                style={[styles.btn, styles.btnOutline]}
+                onPress={clearSignature}
+              >
+                <Ionicons name="refresh-outline" size={20} color="#1e457e" />
+                <Text style={styles.btnOutlineText}>Clear</Text>
+              </TouchableOpacity>
 
-          {/* Note: You can still use expo-print to print the generated file URI */}
-          <TouchableOpacity style={styles.btn} onPress={sharePdf}>
-            <Ionicons name="print" size={20} color="#FFF" />
-            <Text style={styles.btnText}>Print & Sign</Text>
-          </TouchableOpacity>
+              <TouchableOpacity style={styles.btn} onPress={confirmSignature}>
+                <Ionicons name="checkmark" size={20} color="#FFF" />
+                <Text style={styles.btnText}>Confirm</Text>
+              </TouchableOpacity>
+            </>
+          ) : (
+            <>
+              <TouchableOpacity
+                style={[styles.btn, styles.btnOutline]}
+                onPress={signPdf}
+              >
+                <Ionicons name="create-outline" size={20} color="#1e457e" />
+                <Text style={styles.btnOutlineText}>Sign</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.btn} onPress={printPdf}>
+                <Ionicons name="print" size={20} color="#FFF" />
+                <Text style={styles.btnText}>Print</Text>
+              </TouchableOpacity>
+            </>
+          )}
         </View>
       </View>
+      {showSignature && (
+        <View style={{ height: 220 }}>
+          <SignatureScreen
+            ref={signatureRef}
+            onOK={handleSignature}
+            onEmpty={() => Alert.alert("Please provide a signature")}
+            autoClear={false}
+            descriptionText="Sign below"
+            webStyle={`
+        .m-signature-pad--footer {display:none;}
+      `}
+          />
+        </View>
+      )}
+      {signing && (
+        <View style={styles.signingOverlay}>
+          <ActivityIndicator size="large" color="#1e457e" />
+          <Text style={styles.signingText}>Applying signature...</Text>
+        </View>
+      )}
     </SafeAreaView>
   );
 }
@@ -256,5 +385,22 @@ const styles = StyleSheet.create({
     shadowColor: "#000",
     shadowOpacity: 0.05,
     shadowRadius: 10,
+  },
+  signingOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(255,255,255,0.85)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  signingText: {
+    marginTop: 10,
+    fontSize: 14,
+    color: "#1e457e",
+    fontWeight: "500",
   },
 });

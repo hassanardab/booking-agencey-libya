@@ -3,6 +3,7 @@ import { Colors, Spacing } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { getAllJournalsForEvent } from "@/services/accountingService";
 import { getEventById } from "@/services/eventService";
+import { generateReceiptPdf } from "@/services/pdf/pdfReceiptService";
 import { JournalEntry } from "@/types/accounting";
 import { FontAwesome5, Ionicons } from "@expo/vector-icons";
 import { router, Stack, useLocalSearchParams } from "expo-router";
@@ -22,12 +23,14 @@ import { SafeAreaView } from "react-native-safe-area-context";
 const { width } = Dimensions.get("window");
 
 export default function EventDetails() {
-  const { id } = useLocalSearchParams();
   const scheme = useColorScheme();
   const theme = Colors[scheme ?? "light"];
   const styles = createStyles(theme);
 
-  const event = getEventById(id as string);
+  const { id } = useLocalSearchParams<{ id: string }>();
+  if (!id) return null;
+  const event = getEventById(id);
+
   const payments = getAllJournalsForEvent(event?.id as string);
 
   if (!event)
@@ -46,12 +49,17 @@ export default function EventDetails() {
   };
 
   // Receipt button handler (placeholder)
-  const handleReceiptPress = (entry: JournalEntry) => {
-    Alert.alert(
-      "Receipt",
-      `Print receipt for ${getJournalAmount(entry)} ${entry.currency || "USD"}`,
-    );
-    // You can navigate to a receipt preview screen here
+  const handleReceiptPress = async (entry: JournalEntry) => {
+    try {
+      const uri = await generateReceiptPdf(event.id, entry.id);
+      router.push({
+        pathname: "/pdf/receipt",
+        params: { pdfUri: uri },
+      });
+    } catch (error: any) {
+      console.log("PDF ERROR:", error);
+      Alert.alert("Error", error?.message || "Could not generate receipt");
+    }
   };
 
   const StatCard = ({ label, amount, color, isBold }: any) => (
@@ -226,15 +234,7 @@ export default function EventDetails() {
                         {/* Fixed receipt button – now visible and clickable */}
                         <TouchableOpacity
                           style={styles.receiptBtn}
-                          onPress={() =>
-                            router.push({
-                              pathname: "/pdf/receipt",
-                              params: {
-                                eventId: event.id,
-                                entryId: entry.id,
-                              },
-                            })
-                          }
+                          onPress={() => handleReceiptPress(entry)}
                         >
                           <Ionicons
                             name="print-outline"

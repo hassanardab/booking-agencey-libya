@@ -12,7 +12,12 @@
       "supportsTablet": true,
       "infoPlist": {
         "ExpoLocalization_supportsRTL": true,
-        "CFBundleLocalizations": ["en", "ar", "en", "ar"],
+        "CFBundleLocalizations": [
+          "en",
+          "ar",
+          "en",
+          "ar"
+        ],
         "ITSAppUsesNonExemptEncryption": false
       },
       "bundleIdentifier": "com.blackcyg.bookingagenceylibya"
@@ -24,7 +29,6 @@
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
-      // "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
       "package": "com.blackcyg.bookingagenceylibya"
     },
@@ -49,11 +53,15 @@
       [
         "expo-localization",
         {
-          "supportedLocales": ["en", "ar"]
+          "supportedLocales": [
+            "en",
+            "ar"
+          ]
         }
       ],
       "@react-native-community/datetimepicker",
-      "expo-asset"
+      "expo-asset",
+      "expo-maps"
     ],
     "experiments": {
       "typedRoutes": true,
