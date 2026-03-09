@@ -275,10 +275,13 @@ export function buildAgreementHtml(
 
     <!-- Signatures -->
     <div class="signatures">
-      <div>توقيع الطرف الأول/ المكتب</div>
-      <div>توقيع الطرف الثاني/ الزبون</div>
+      <div></div>
+      <div>
+      <span>الطرف الثاني/ </span>
+      <span>${event.customerName}</span>
+      </div>
     </div>
-
+    
   <!-- Print‑only footer with contact info -->
   <div class="print-footer">
     واتس اب 0919395770 - هاتف 0923765263 - فيسبوك عويشة نسمة الجنوب - انستقرام <span dir="ltr">awisha ellibya</span>

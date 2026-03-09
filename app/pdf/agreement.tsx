@@ -1,5 +1,4 @@
-//app/pdf/receipt.tsx
-
+//app/pdf/agreement.tsx
 import { Ionicons } from "@expo/vector-icons";
 import fontkit from "@pdf-lib/fontkit";
 import { Buffer } from "buffer"; // needed for base64 conversion
@@ -115,8 +114,8 @@ export default function ReceiptPreview() {
       const lastPage = pages[pages.length - 1];
 
       lastPage.drawImage(pngImage, {
-        x: 300,
-        y: 5,
+        x: 20,
+        y: 40,
         width: pngDims.width * scale,
         height: pngDims.height * scale,
       });
@@ -242,16 +241,23 @@ export default function ReceiptPreview() {
       </View>
 
       {showSignature && (
-        <View style={{ height: 220 }}>
+        <View style={{ height: 300, marginTop: 10 }}>
           <SignatureScreen
+            key={showSignature ? "visible" : "hidden"} // 👈 force remount
             ref={signatureRef}
             onOK={handleSignature}
             onEmpty={() => Alert.alert("Please provide a signature")}
             autoClear={false}
             descriptionText="Sign below"
             webStyle={`
-              .m-signature-pad--footer { display: none; }
-            `}
+        .m-signature-pad--footer { display: none; }
+        .m-signature-pad--body { height: 100%; width: 100%; }
+        .m-signature-pad--body canvas { 
+          width: 100%; 
+          height: 100%; 
+          background: #f9f9f9;  /* optional visual feedback */
+        }
+      `}
           />
         </View>
       )}

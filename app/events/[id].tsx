@@ -241,7 +241,7 @@ export default function EventDetails() {
                     <View style={styles.timelineContent}>
                       <View style={styles.rowBetween}>
                         {/* <Text style={styles.paymentType}>
-                          {paymentType} -{" "}
+                          {paymentType} -
                           {paymentMethod.replace("_", " ").toUpperCase()}
                         </Text> */}
                         <Text style={styles.paymentType}>
@@ -261,7 +261,7 @@ export default function EventDetails() {
                         </TouchableOpacity>
                       </View>
                       <Text style={styles.paymentMeta}>
-                        {formatJournalDate(entry.date)} •{" "}
+                        {formatJournalDate(entry.date)} •
                         {paymentMethod.replace("_", " ").toUpperCase()}
                       </Text>
                       <Text style={styles.recordedBy}>
