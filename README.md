@@ -50,42 +50,53 @@ Join our community of developers creating universal apps.
 - [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
 
 ==========
+
 ## project plan & phases
+
 - Phase #1 UI
-[x][x] UI main 3 page with themes
-[x][x] search function UI
-[x][x] event details screen
-[x][x] event stat screen
-[x][x] add event screen
-[x][x] Calendar screen
+  [x][x] UI main 3 page with themes
+  [x][x] search function UI
+  [x][x] event details screen
+  [x][x] event stat screen
+  [x][x] add event screen
+  [x][x] Calendar screen
 
 [x][_] generate pdf receipt
-      [x]1 page
-      [x]landscape
-      [_]page A5
-      [_]receipt layout ok
-      [_]agreement layout ok
-      [_]save pdf
-      [_]privew
-[_][_] generate pdf agreement
-[_][_] sign the pdf agreement
+[x]1 page
+[x]landscape
+[_]page A5
+[_]receipt layout ok
+[_]agreement layout ok
+[_]save pdf
+[_]privew
+[\_][_] generate pdf agreement
+[\_][_] sign the pdf agreement
 
-[_][_] week day picker
+[\_][_] week day picker
 
-[_][_] public page UI
-[_][_] contorl panel for public page
+[\_][_] public page UI
+[\_][_] contorl panel for public page
 
-[_][_] all dashboard sub UI done
-[_][_] activites sub UI
-[_][_] settings sub UI
-[_][_] public page sub UI
+[\_][_] all dashboard sub UI done
+[\_][_] activites sub UI
+[\_][_] settings sub UI
+[\_][_] public page sub UI
 
-[_][_] public page view
+[\_][_] public page view
 
-[_][_] sign up
-[_][_] login page
-[_][_] forget password page
+[\_][_] sign up
+[\_][_] login page
+[\_][_] forget password page
 
-- Phase #2 Backend
+- Phase #2 functions
+  [\_][_] signing PDFs
+  [\_][_] enable firebase push notification and app notifications
+  [\_][_] supabase storage
+  [\_][_] firebase authintication
+  [\_][_] firebase firestore
+  [\_][_] supabase database
+  [\_][_] GPS, location and maps
+  [\_][_] take pictures, upload an image or upload a file
+  [\_][_] scan qr code/barcode
 
-- Phase #3 Testing
+- Phase #3 Backend & Testing

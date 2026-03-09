@@ -38,7 +38,7 @@ export default function AgreementPreview() {
 
       // 2. Create PDF Logic
       const pdfDoc = await PDFDocument.create();
-      const page = pdfDoc.addPage([600, 400]); // Custom size or standard [595, 842] (A4)
+      const page = pdfDoc.addPage([595.28, 841.89]); // Custom size or standard [595, 842] (A4)
       const { width, height } = page.getSize();
       const font = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
       const regularFont = await pdfDoc.embedFont(StandardFonts.Helvetica);

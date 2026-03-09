@@ -17,8 +17,8 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import Pdf from "react-native-pdf"; 
- 
+import Pdf from "react-native-pdf";
+
 export default function ReceiptPreview() {
   const { eventId, entryId } = useLocalSearchParams();
   const [pdfUri, setPdfUri] = useState<string | null>(null);
@@ -42,7 +42,7 @@ export default function ReceiptPreview() {
 
       // 2. Create PDF Logic
       const pdfDoc = await PDFDocument.create();
-      const page = pdfDoc.addPage([600, 400]); // Custom size or standard [595, 842] (A4)
+      const page = pdfDoc.addPage([595, 420]); // Custom size or standard [595, 842] (A4)
       const { width, height } = page.getSize();
       const font = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
       const regularFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
