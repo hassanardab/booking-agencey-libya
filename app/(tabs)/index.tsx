@@ -4,6 +4,8 @@ import { Colors, Radius, Shadows, Spacing } from "@/constants/theme";
 import { MOCK_EVENTS } from "@/data/mockEvents";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { router } from "expo-router";
+// Add this to your imports in index.tsx
+import ScrollingDay from "@/components/dashboard/scrollingDay";
 import {
   AlertCircle,
   Banknote,
@@ -43,6 +45,19 @@ const Dashboard = () => {
 
   const { t } = useTranslation();
   const isRTL = I18nManager.isRTL;
+
+  const [selectedDate, setSelectedDate] = useState(new Date());
+
+  // Filter events for the selected day
+  const filteredEvents = MOCK_EVENTS.filter((event) => {
+    const eventDate = new Date(event.startDate);
+    return (
+      eventDate.getDate() === selectedDate.getDate() &&
+      eventDate.getMonth() === selectedDate.getMonth() &&
+      eventDate.getFullYear() === selectedDate.getFullYear() &&
+      (event.status === "confirmed" || event.status === "partially_paid")
+    );
+  });
 
   // 1. Updated Stats: Using string IDs that represent the filter category
   const stats = [
@@ -137,27 +152,29 @@ const Dashboard = () => {
           {searchResultsVisible && <SearchOverlay results={searchResults} />}
 
           {/* Filters */}
-          <View style={styles.filterWrapper}>
-            {["Today", "Week", "Month", "Custom"].map((item) => (
-              <TouchableOpacity
-                key={item}
-                onPress={() => setActiveFilter(item)}
-                style={[
-                  styles.filterPill,
-                  activeFilter === item && styles.activePill,
-                ]}
-              >
-                <Text
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            <View style={styles.filterWrapper}>
+              {["Today", "Week", "Month", "Custom"].map((item) => (
+                <TouchableOpacity
+                  key={item}
+                  onPress={() => setActiveFilter(item)}
                   style={[
-                    styles.filterText,
-                    activeFilter === item && styles.activeFilterText,
+                    styles.filterPill,
+                    activeFilter === item && styles.activePill,
                   ]}
                 >
-                  {item}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
+                  <Text
+                    style={[
+                      styles.filterText,
+                      activeFilter === item && styles.activeFilterText,
+                    ]}
+                  >
+                    {item}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </ScrollView>
 
           {/* Stats Grid */}
           <View style={styles.statsGrid}>
@@ -177,7 +194,8 @@ const Dashboard = () => {
           </View>
 
           {/* Calendar */}
-          <View style={styles.sectionHeader}>
+          {/* Old setup stats here -> */}
+          {/* <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>
               {t("dashboard.title", "Dashboard")}
             </Text>
@@ -209,49 +227,77 @@ const Dashboard = () => {
                 </Text>
               </TouchableOpacity>
             ))}
-          </ScrollView>
-
-          {/* Events Section */}
-          <Text style={styles.sectionTitle}>
-            {t("dashboard.upcoming.events", "Upcoming Events")}
-          </Text>
-          {upcomingEvents.map((event) => (
-            <TouchableOpacity
-              key={event.id}
-              style={styles.eventCard}
-              onPress={() =>
-                router.push({
-                  pathname: `/events/[id]`,
-                  params: {
-                    id: event.id,
-                    title: event.title,
-                    amount: event.amount,
-                    status: event.status,
-                  },
-                })
-              }
-            >
-              <View style={styles.eventInfo}>
-                <Text style={styles.eventTitle}>{event.title}</Text>
-                <View style={styles.eventMeta}>
-                  <Clock size={14} color={theme.textSecondary} />
-                  {/* Format the Date object into a readable time */}
-                  <Text style={styles.eventTime}>
-                    {event.startDate.toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                    • {event.status}
-                  </Text>
-                </View>
-              </View>
-              <View style={styles.eventRight}>
-                {/* Mapping the 'amount' property */}
-                <Text style={styles.eventPrice}>${event.amount}</Text>
-                <ChevronRight size={18} color={theme.textSecondary} />
-              </View>
+          </ScrollView> */}
+          {/* Calendar Section */}
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>
+              {t("dashboard.title", "Dashboard")}
+            </Text>
+            <TouchableOpacity onPress={() => router.push(`/calendar/calendar`)}>
+              <Text style={styles.viewAll}>
+                {t("dashboard.view.calendar", "View Calendar")}
+              </Text>
             </TouchableOpacity>
-          ))}
+          </View>
+
+          {/* !!! IMPORTANT: You must call the component here !!! */}
+          <ScrollingDay
+            theme={theme}
+            events={MOCK_EVENTS}
+            selectedDate={selectedDate}
+            onDateSelect={(date) => setSelectedDate(date)}
+          />
+
+          {/* Upcoming Events Section */}
+          <Text style={[styles.sectionTitle, { marginTop: Spacing.lg }]}>
+            {t("dashboard.upcoming.events", "Events for ")}
+            {selectedDate.toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+            })}
+          </Text>
+
+          {filteredEvents.length > 0 ? (
+            filteredEvents.map((event) => (
+              <TouchableOpacity
+                key={event.id}
+                style={styles.eventCard}
+                onPress={() =>
+                  router.push({
+                    pathname: `/events/[id]`,
+                    params: { id: event.id },
+                  })
+                }
+              >
+                <View style={styles.eventInfo}>
+                  <Text style={styles.eventTitle}>{event.title}</Text>
+                  <View style={styles.eventMeta}>
+                    <Clock size={14} color={theme.textSecondary} />
+                    {/* Format the Date object into a readable time */}
+                    <Text style={styles.eventTime}>
+                      {event.startDate.toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                      • {event.status}
+                    </Text>
+                  </View>
+                </View>
+                <View style={styles.eventRight}>
+                  {/* Mapping the 'amount' property */}
+                  <Text style={styles.eventPrice}>${event.amount}</Text>
+                  <ChevronRight size={18} color={theme.textSecondary} />
+                </View>
+              </TouchableOpacity>
+            ))
+          ) : (
+            <View style={styles.emptyContainer}>
+              <Text style={{ color: theme.textSecondary, textAlign: "center" }}>
+                No confirmed events for this date.
+              </Text>
+            </View>
+          )}
+          {/* <- old setup ends here */}
 
           {/* Postponed Section */}
           <View style={styles.postponedHeader}>
@@ -463,7 +509,7 @@ const createStyles = (
     },
 
     calendarStrip: {
-      marginBottom: Spacing.xl,
+      marginBottom: Spacing.sm,
     },
 
     dateCard: {
@@ -656,6 +702,12 @@ const createStyles = (
       alignItems: "center",
       ...Shadows.card, // Using your design system shadow
       elevation: 5, // Android specific shadow
+    },
+    emptyContainer: {
+      textAlign: "center",
+      color: theme.textSecondary,
+      marginTop: 20,
+      fontStyle: "italic",
     },
   });
 

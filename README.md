@@ -70,9 +70,11 @@ Join our community of developers creating universal apps.
 - [x][x]content
 - [x][x] sign the pdf agreement
 
-- [x][_] generate pdf agreement
+- [x][x] generate pdf agreement
 
+- [x][x]date range UI fix
 - [_][_] week day picker
+- [_][_] mock data is actaul connected
 
 - [_][_] public page UI
 - [_][_] contorl panel for public page
@@ -80,9 +82,15 @@ Join our community of developers creating universal apps.
 - [_][_] all dashboard sub UI done
 - [_][_] activites sub UI
 - [_][_] settings sub UI
-- [_][_] public page sub UI
+- [_][_] Dashboard Arbic UI
+- [_][_] activites Arbic UI
+- [_][_] settings Arbic UI
+- [_][_] event details Arbic UI
+- [_][_] add/edit event Arbic UI
+- [_][_] print(receitp/agreemnt) Arabic UI
 
-- [_][_] public page view
+- [_][_] them dynamic
+- [_][_] Ar/En works fine (system auto default)
 
 - [_][_] sign up
 - [_][_] login page
