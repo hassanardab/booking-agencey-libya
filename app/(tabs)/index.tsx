@@ -1,10 +1,10 @@
-import React, { useState } from "react";
 //app/(tabs)/index.tsx
 import SearchOverlay from "@/components/dashboard/SearchOverlay";
 import { Colors, Radius, Shadows, Spacing } from "@/constants/theme";
 import { MOCK_EVENTS } from "@/data/mockEvents";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { router } from "expo-router";
+import React, { useState } from "react";
 // Add this to your imports in index.tsx
 import ScrollingDay from "@/components/dashboard/scrollingDay";
 import StatsSection from "@/components/dashboard/StatsSection";
@@ -69,7 +69,14 @@ const Dashboard = () => {
       (event.status === "confirmed" || event.status === "partially_paid")
     );
   });
-
+  const isTodaySelected = () => {
+    const today = new Date();
+    return (
+      selectedDate.getDate() === today.getDate() &&
+      selectedDate.getMonth() === today.getMonth() &&
+      selectedDate.getFullYear() === today.getFullYear()
+    );
+  };
   // 1. Updated Stats: Using string IDs that represent the filter category
   const stats = [
     {
@@ -181,7 +188,14 @@ const Dashboard = () => {
               </Text>
             </TouchableOpacity>
           </View>
-
+          {!isTodaySelected() && (
+            <TouchableOpacity
+              style={styles.todayButton}
+              onPress={() => handleDateSelect(new Date())}
+            >
+              <Text style={styles.todayButtonText}>Today</Text>
+            </TouchableOpacity>
+          )}
           {/* !!! IMPORTANT: You must call the component here !!! */}
           <ScrollingDay
             theme={theme}
@@ -664,6 +678,21 @@ const createStyles = (
       fontSize: 14,
       color: theme.primary,
       fontWeight: "500",
+    },
+    todayButton: {
+      alignSelf: "flex-start",
+      marginTop: 6,
+      marginBottom: Spacing.md,
+      paddingHorizontal: 14,
+      paddingVertical: 6,
+      borderRadius: 16,
+      backgroundColor: theme.primary,
+    },
+
+    todayButtonText: {
+      color: theme.white,
+      fontSize: 12,
+      fontWeight: "600",
     },
   });
 

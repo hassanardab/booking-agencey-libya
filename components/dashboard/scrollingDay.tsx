@@ -1,6 +1,6 @@
 //components/dashboard/scrollingDay.tsx
 import { Radius, Spacing } from "@/constants/theme";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   FlatList,
   NativeScrollEvent,
@@ -26,6 +26,7 @@ const ScrollingDay: React.FC<ScrollingDayProps> = ({
 }) => {
   const [dates, setDates] = useState<Date[]>([]);
   const styles = createStyles(theme);
+  const listRef = useRef<FlatList>(null);
 
   // Initial load: 2 days before, 10 days ahead
   useEffect(() => {
@@ -37,6 +38,18 @@ const ScrollingDay: React.FC<ScrollingDayProps> = ({
     }
     setDates(initialDates);
   }, []);
+
+  useEffect(() => {
+    const index = dates.findIndex((d) => isSameDay(d, selectedDate));
+
+    if (index !== -1 && listRef.current) {
+      listRef.current.scrollToIndex({
+        index,
+        animated: true,
+        viewPosition: 0.5, // centers the selected day
+      });
+    }
+  }, [selectedDate, dates]);
 
   const isSameDay = (d1: Date, d2: Date) => {
     return (
@@ -87,6 +100,14 @@ const ScrollingDay: React.FC<ScrollingDayProps> = ({
       fetchMore("before");
     }
   };
+  const isToday = (date: Date) => {
+    const today = new Date();
+    return (
+      date.getDate() === today.getDate() &&
+      date.getMonth() === today.getMonth() &&
+      date.getFullYear() === today.getFullYear()
+    );
+  };
 
   const renderItem = ({ item }: { item: Date }) => {
     const active = isSameDay(item, selectedDate);
@@ -115,6 +136,7 @@ const ScrollingDay: React.FC<ScrollingDayProps> = ({
 
   return (
     <FlatList
+      ref={listRef}
       horizontal
       data={dates}
       renderItem={renderItem}
@@ -179,6 +201,14 @@ const createStyles = (theme: any) =>
     },
     activeDateText: {
       color: theme.white,
+    },
+    todayCard: {
+      backgroundColor: theme.primary + "80", // ~50% opacity
+      borderColor: theme.primary,
+    },
+
+    todayText: {
+      color: theme.primary,
     },
   });
 
