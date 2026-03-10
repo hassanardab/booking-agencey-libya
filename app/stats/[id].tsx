@@ -1,6 +1,7 @@
-//app/stats/[id].tsx
-import { Colors, Spacing, Radius, Shadows } from "@/constants/theme";
+import { Colors, Radius, Shadows, Spacing } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
+import { getEventsByIds } from "@/services/eventService";
+import { Ionicons } from "@expo/vector-icons";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import {
   FlatList,
@@ -9,72 +10,81 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons"; 
-
-const MOCK_EVENTS = [
-  {
-    id: "1",
-    title: "Corporate Gala",
-    price: "$2400",
-    type: "cash",
-    time: "14:00",
-  },
-  {
-    id: "2",
-    title: "Wedding Photography",
-    price: "$1200",
-    type: "card",
-    time: "17:30",
-  },
-];
 
 export default function StatsPage() {
-  const { id } = useLocalSearchParams(); 
+  const { id, eventIds } = useLocalSearchParams();
   const scheme = useColorScheme();
   const theme = Colors[scheme ?? "light"];
 
-  // Format the ID nicely (e.g., "cash" -> "Cash Stats")
-  const pageTitle = id 
-    ? `${id.toString().charAt(0).toUpperCase()}${id.toString().slice(1)} Stats` 
+  // Safely parse the incoming JSON array of IDs
+  let parsedIds: string[] = [];
+  try {
+    if (typeof eventIds === "string") {
+      parsedIds = JSON.parse(eventIds);
+    }
+  } catch (error) {
+    console.error("Failed to parse eventIds", error);
+  }
+
+  // Fetch the actual events
+  const displayEvents = getEventsByIds(parsedIds);
+
+  const pageTitle = id
+    ? `${id.toString().charAt(0).toUpperCase()}${id.toString().slice(1)} Stats`
     : "Stats";
+
+  // Helper to choose an icon based on the current stat category
+  const getIconName = () => {
+    if (id === "cash") return "cash-outline";
+    if (id === "bank") return "business-outline";
+    if (id === "unpaid") return "alert-circle-outline";
+    return "calendar-outline";
+  };
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <Stack.Screen
         options={{
           headerTitle: "",
-          headerShadowVisible: false, 
+          headerShadowVisible: false,
           headerStyle: { backgroundColor: theme.background },
-          headerTintColor: theme.textMain, 
+          headerTintColor: theme.textMain,
         }}
       />
-      
-      {/* Improved Page Header */}
+
       <View style={styles.headerContainer}>
         <Text style={[styles.header, { color: theme.textMain }]}>
           {pageTitle}
         </Text>
         <Text style={[styles.subHeader, { color: theme.textSecondary }]}>
-          Review your recent activity
+          Showing {displayEvents.length} filtered{" "}
+          {displayEvents.length === 1 ? "event" : "events"}
         </Text>
       </View>
 
       <FlatList
-        data={MOCK_EVENTS}
+        data={displayEvents}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
+        ListEmptyComponent={
+          <View style={{ alignItems: "center", marginTop: Spacing.xl }}>
+            <Text style={{ color: theme.textSecondary }}>
+              No events found for this filter.
+            </Text>
+          </View>
+        }
         renderItem={({ item }) => (
           <TouchableOpacity
             style={[
               styles.card,
-              { 
-                backgroundColor: theme.surface, 
+              {
+                backgroundColor: theme.surface,
                 borderColor: theme.border,
-                ...Shadows.card // Pulled from your theme file
+                ...Shadows.card,
               },
             ]}
-            activeOpacity={0.7} // Better touch feedback
+            activeOpacity={0.7}
             onPress={() =>
               router.push({
                 pathname: "/events/[id]",
@@ -84,40 +94,63 @@ export default function StatsPage() {
               })
             }
           >
-            {/* Left Icon Indicator */}
-            <View style={[styles.iconContainer, { backgroundColor: theme.background }]}>
-              <Ionicons 
-                name={item.type === 'cash' ? 'cash-outline' : 'card-outline'} 
-                size={24} 
-                color={theme.primary} 
+            <View
+              style={[
+                styles.iconContainer,
+                { backgroundColor: theme.background },
+              ]}
+            >
+              <Ionicons
+                name={getIconName()}
+                size={24}
+                color={id === "unpaid" ? theme.danger : theme.primary}
               />
             </View>
 
-            {/* Main Center Content */}
             <View style={styles.cardContent}>
-              <Text style={[styles.cardTitle, { color: theme.textMain }]} numberOfLines={1}>
+              <Text
+                style={[styles.cardTitle, { color: theme.textMain }]}
+                numberOfLines={1}
+              >
                 {item.title}
               </Text>
               <View style={styles.timeContainer}>
                 <Ionicons name="time-outline" size={14} color={theme.icon} />
                 <Text style={[styles.cardTime, { color: theme.textSecondary }]}>
-                  {item.time}
+                  {/* Format the raw Date object correctly */}
+                  {new Date(item.startDate).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
                 </Text>
               </View>
             </View>
 
-            {/* Right Side Info (Price & Type) */}
             <View style={styles.rightContent}>
               <Text style={[styles.priceText, { color: theme.textMain }]}>
-                {item.price}
+                ${item.amount.toLocaleString()}
               </Text>
-              <Text style={[styles.typeText, { color: theme.textSecondary }]}>
-                {item.type.toUpperCase()}
+              <Text
+                style={[
+                  styles.typeText,
+                  {
+                    color:
+                      item.status === "confirmed"
+                        ? theme.success
+                        : theme.textSecondary,
+                  },
+                ]}
+              >
+                {item.status.replace("_", " ").toUpperCase()}
               </Text>
             </View>
 
-            {/* Chevron Affordance */}
-            <Ionicons name="chevron-forward" size={20} color={theme.icon} style={styles.chevron} />
+            <Ionicons
+              name="chevron-forward"
+              size={20}
+              color={theme.icon}
+              style={styles.chevron}
+            />
           </TouchableOpacity>
         )}
       />
@@ -126,16 +159,16 @@ export default function StatsPage() {
 }
 
 const styles = StyleSheet.create({
-  container: { 
-    flex: 1, 
+  container: {
+    flex: 1,
   },
   headerContainer: {
     paddingHorizontal: Spacing.lg,
     paddingBottom: Spacing.lg,
   },
-  header: { 
-    fontSize: 28, 
-    fontWeight: "800", 
+  header: {
+    fontSize: 28,
+    fontWeight: "800",
     letterSpacing: -0.5,
   },
   subHeader: {
@@ -144,7 +177,7 @@ const styles = StyleSheet.create({
   },
   listContent: {
     paddingHorizontal: Spacing.lg,
-    paddingBottom: Spacing.xxl, // Extra padding at bottom for safe scrolling
+    paddingBottom: Spacing.xxl,
   },
   card: {
     padding: Spacing.md,
@@ -188,11 +221,11 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
   typeText: {
-    fontSize: 12,
-    marginTop: 2,
-    fontWeight: "500",
+    fontSize: 10,
+    marginTop: 4,
+    fontWeight: "700",
   },
   chevron: {
     marginLeft: Spacing.xs,
-  }
+  },
 });

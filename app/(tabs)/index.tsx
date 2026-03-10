@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 //app/(tabs)/index.tsx
 import SearchOverlay from "@/components/dashboard/SearchOverlay";
 import { Colors, Radius, Shadows, Spacing } from "@/constants/theme";
@@ -6,6 +7,7 @@ import { useColorScheme } from "@/hooks/use-color-scheme";
 import { router } from "expo-router";
 // Add this to your imports in index.tsx
 import ScrollingDay from "@/components/dashboard/scrollingDay";
+import StatsSection from "@/components/dashboard/StatsSection";
 import {
   AlertCircle,
   Banknote,
@@ -16,9 +18,9 @@ import {
   Search,
   Wallet,
 } from "lucide-react-native";
-import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
+  ActivityIndicator,
   I18nManager,
   Keyboard,
   ScrollView,
@@ -47,7 +49,16 @@ const Dashboard = () => {
   const isRTL = I18nManager.isRTL;
 
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const handleDateSelect = async (date: Date) => {
+    setLoading(true);
 
+    // simulate API fetch
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    setSelectedDate(date);
+
+    setLoading(false);
+  };
   // Filter events for the selected day
   const filteredEvents = MOCK_EVENTS.filter((event) => {
     const eventDate = new Date(event.startDate);
@@ -115,6 +126,7 @@ const Dashboard = () => {
     setSearchResultsVisible(false);
   };
   const insets = useSafeAreaInsets();
+  const [loading, setLoading] = useState(false); // new loading state
 
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
@@ -151,83 +163,13 @@ const Dashboard = () => {
 
           {searchResultsVisible && <SearchOverlay results={searchResults} />}
 
-          {/* Filters */}
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            <View style={styles.filterWrapper}>
-              {["Today", "Week", "Month", "Custom"].map((item) => (
-                <TouchableOpacity
-                  key={item}
-                  onPress={() => setActiveFilter(item)}
-                  style={[
-                    styles.filterPill,
-                    activeFilter === item && styles.activePill,
-                  ]}
-                >
-                  <Text
-                    style={[
-                      styles.filterText,
-                      activeFilter === item && styles.activeFilterText,
-                    ]}
-                  >
-                    {item}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          </ScrollView>
+          {/* NEW: Integrated Filter & Stats */}
+          <StatsSection
+            theme={theme}
+            activeFilter={activeFilter}
+            setActiveFilter={setActiveFilter}
+          />
 
-          {/* Stats Grid */}
-          <View style={styles.statsGrid}>
-            {stats.map((item) => (
-              <TouchableOpacity
-                key={item.id}
-                style={styles.statCard}
-                onPress={() => router.push(`/stats/${item.id}`)}
-              >
-                <View style={[styles.iconCircle, { backgroundColor: item.bg }]}>
-                  {item.icon}
-                </View>
-                <Text style={styles.statLabel}>{item.label}</Text>
-                <Text style={styles.statValue}>{item.value}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-
-          {/* Calendar */}
-          {/* Old setup stats here -> */}
-          {/* <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>
-              {t("dashboard.title", "Dashboard")}
-            </Text>
-            <TouchableOpacity onPress={() => router.push(`/calendar/calendar`)}>
-              <Text style={styles.viewAll}>
-                {t("dashboard.view.calendar", "View Calendar")}
-              </Text>
-            </TouchableOpacity>
-          </View>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            style={styles.calendarStrip}
-          >
-            {[14, 15, 16, 17, 18, 19].map((day, i) => (
-              <TouchableOpacity
-                key={i}
-                style={[styles.dateCard, i === 1 && styles.activeDateCard]}
-              >
-                <Text
-                  style={[styles.dateDay, i === 1 && styles.activeDateText]}
-                >
-                  {day}
-                </Text>
-                <Text
-                  style={[styles.dateMonth, i === 1 && styles.activeDateText]}
-                >
-                  Mar
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView> */}
           {/* Calendar Section */}
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>
@@ -245,17 +187,8 @@ const Dashboard = () => {
             theme={theme}
             events={MOCK_EVENTS}
             selectedDate={selectedDate}
-            onDateSelect={(date) => setSelectedDate(date)}
+            onDateSelect={(date) => handleDateSelect(date)}
           />
-
-          {/* Upcoming Events Section */}
-          <Text style={[styles.sectionTitle, { marginTop: Spacing.lg }]}>
-            {t("dashboard.upcoming.events", "Events for ")}
-            {selectedDate.toLocaleDateString("en-US", {
-              month: "short",
-              day: "numeric",
-            })}
-          </Text>
 
           {filteredEvents.length > 0 ? (
             filteredEvents.map((event) => (
@@ -331,6 +264,12 @@ const Dashboard = () => {
       >
         <Plus size={24} color={theme.white} />
       </TouchableOpacity>
+      {loading && (
+        <View style={styles.loadingOverlay}>
+          <ActivityIndicator size="large" color={theme.primary} />
+          <Text style={styles.loadingText}>Loading...</Text>
+        </View>
+      )}
     </SafeAreaView>
   );
 };
@@ -708,6 +647,23 @@ const createStyles = (
       color: theme.textSecondary,
       marginTop: 20,
       fontStyle: "italic",
+    },
+    loadingOverlay: {
+      position: "absolute",
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: "rgba(255,255,255,0.85)",
+      justifyContent: "center",
+      alignItems: "center",
+    },
+
+    loadingText: {
+      marginTop: 10,
+      fontSize: 14,
+      color: theme.primary,
+      fontWeight: "500",
     },
   });
 

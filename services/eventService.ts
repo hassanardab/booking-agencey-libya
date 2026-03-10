@@ -10,6 +10,13 @@ export function getEventById(id: string): BookingEvent | undefined {
 }
 
 /**
+ * Get multiple events by an array of IDs
+ */
+export function getEventsByIds(ids: string[]): BookingEvent[] {
+  return MOCK_EVENTS.filter((event) => ids.includes(event.id));
+}
+
+/**
  * Get all events
  */
 export function getAllEvents(): BookingEvent[] {

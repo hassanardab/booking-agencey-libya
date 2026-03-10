@@ -1,30 +1,21 @@
-// data/mockJournalEntries.ts
 import { JournalEntry } from "@/types/accounting";
+import { ACCOUNTS } from "./mcokAccounts";
 
-// Helper to create a Date relative to today
 const today = new Date();
-const todayAt = (hours: number, minutes = 0, seconds = 0) => {
+const todayAt = (hours: number) => {
   const d = new Date(today);
-  d.setHours(hours, minutes, seconds, 0);
+  d.setHours(hours, 0, 0, 0);
   return d;
 };
 
-// Mock account IDs
-const ACCOUNTS = {
-  CASH: { id: "acc_cash", name: "Cash" },
-  AR: { id: "acc_ar", name: "Accounts Receivable" },
-  UNEARNED_REV: { id: "acc_unearned", name: "Unearned Revenue" },
-  REVENUE: { id: "acc_revenue", name: "Event Revenue" },
-} as const;
-
 export const MOCK_JOURNAL_ENTRIES: JournalEntry[] = [
-  // ===== Event 1: Corporate Gala (fully paid) =====
+  // Event 1: Fully Paid
   {
     id: "je_1",
-    companyId: "company-1",
-    date: todayAt(14, 5),
-    description: "Corporate Gala - Full payment received",
-    receiptNumber: "RCPT-2024-001",
+    companyId: "mamo-15",
+    date: todayAt(14),
+    description: "Full payment: Corporate Gala",
+    receiptNumber: "RCPT-2026-001", // Added
     source: "booking",
     referenceId: "1",
     currency: "USD",
@@ -34,33 +25,24 @@ export const MOCK_JOURNAL_ENTRIES: JournalEntry[] = [
         accountName: ACCOUNTS.CASH.name,
         amount: 2400,
         type: "debit",
-        description: "Payment from Acme Corp",
       },
       {
-        accountId: ACCOUNTS.REVENUE.id,
-        accountName: ACCOUNTS.REVENUE.name,
+        accountId: ACCOUNTS.EVENT_REVENUE.id,
+        accountName: ACCOUNTS.EVENT_REVENUE.name,
         amount: 2400,
         type: "credit",
-        description: "Revenue recognized for Corporate Gala",
       },
     ],
-    metadata: { paymentMethod: "bank_transfer" },
-    createdAt: todayAt(14, 5),
+    createdAt: todayAt(14),
   },
 
-  // ===== Event 2: Wedding Photography (partially paid) =====
-  // Entry 2a: Deposit received 5 days before the event
+  // Event 2: Partial Payment
   {
-    id: "je_2a",
-    companyId: "company-1",
-    date: (() => {
-      const d = new Date(today);
-      d.setDate(d.getDate() - 5);
-      d.setHours(10, 0, 0, 0);
-      return d;
-    })(),
-    description: "Wedding Photography - Deposit received",
-    receiptNumber: "RCPT-2024-002",
+    id: "je_2",
+    companyId: "mamo-15",
+    date: todayAt(17),
+    description: "Partial payment: Wedding Photography",
+    receiptNumber: "INV-2026-002", // Added
     source: "booking",
     referenceId: "2",
     currency: "USD",
@@ -70,69 +52,30 @@ export const MOCK_JOURNAL_ENTRIES: JournalEntry[] = [
         accountName: ACCOUNTS.CASH.name,
         amount: 600,
         type: "debit",
-        description: "Deposit from Sarah & John",
       },
-      {
-        accountId: ACCOUNTS.UNEARNED_REV.id,
-        accountName: ACCOUNTS.UNEARNED_REV.name,
-        amount: 600,
-        type: "credit",
-        description: "Unearned revenue – deposit",
-      },
-    ],
-    metadata: { paymentMethod: "credit_card" },
-    createdAt: (() => {
-      const d = new Date(today);
-      d.setDate(d.getDate() - 5);
-      d.setHours(10, 0, 0, 0);
-      return d;
-    })(),
-  },
-
-  // Entry 2b: Service rendered on event day – recognise revenue and remaining receivable
-  {
-    id: "je_2b",
-    companyId: "company-1",
-    date: todayAt(18, 0),
-    description: "Wedding Photography - Service provided, invoice raised",
-    receiptNumber: "INV-2024-002",
-    source: "booking",
-    referenceId: "2",
-    currency: "USD",
-    transactions: [
       {
         accountId: ACCOUNTS.AR.id,
         accountName: ACCOUNTS.AR.name,
         amount: 600,
         type: "debit",
-        description: "Remaining balance due",
       },
       {
-        accountId: ACCOUNTS.UNEARNED_REV.id,
-        accountName: ACCOUNTS.UNEARNED_REV.name,
-        amount: 600,
-        type: "debit",
-        description: "Deposit now earned",
-      },
-      {
-        accountId: ACCOUNTS.REVENUE.id,
-        accountName: ACCOUNTS.REVENUE.name,
+        accountId: ACCOUNTS.EVENT_REVENUE.id,
+        accountName: ACCOUNTS.EVENT_REVENUE.name,
         amount: 1200,
         type: "credit",
-        description: "Total revenue for wedding photography",
       },
     ],
-    metadata: {},
-    createdAt: todayAt(18, 0),
+    createdAt: todayAt(17),
   },
 
-  // ===== Event 3: Product Launch (postponed, deposit taken) =====
+  // Event 3: Postponed (Deposit)
   {
     id: "je_3",
-    companyId: "company-1",
-    date: new Date("2023-09-15T11:00:00Z"),
-    description: "Product Launch - Deposit received (event postponed)",
-    receiptNumber: "RCPT-2023-003",
+    companyId: "mamo-15",
+    date: todayAt(10),
+    description: "Deposit for Postponed Product Launch",
+    receiptNumber: "RCPT-2026-003", // Added
     source: "booking",
     referenceId: "3",
     currency: "USD",
@@ -142,17 +85,68 @@ export const MOCK_JOURNAL_ENTRIES: JournalEntry[] = [
         accountName: ACCOUNTS.CASH.name,
         amount: 1000,
         type: "debit",
-        description: "Deposit from TechFlow Inc",
       },
       {
-        accountId: ACCOUNTS.UNEARNED_REV.id,
-        accountName: ACCOUNTS.UNEARNED_REV.name,
+        accountId: ACCOUNTS.UNEARNED_REVENUE.id,
+        accountName: ACCOUNTS.UNEARNED_REVENUE.name,
         amount: 1000,
         type: "credit",
-        description: "Unearned revenue – deposit for postponed event",
       },
     ],
-    metadata: { paymentMethod: "credit_card" },
-    createdAt: new Date("2023-09-15T11:00:00Z"),
+    createdAt: todayAt(10),
+  },
+
+  // Event 4: This Week (Bank Transfer)
+  {
+    id: "je_4",
+    companyId: "mamo-15",
+    date: new Date(new Date().setDate(today.getDate() + 3)),
+    description: "Bank Transfer: Networking Brunch",
+    receiptNumber: "BANK-2026-004", // Added
+    source: "booking",
+    referenceId: "4",
+    currency: "USD",
+    transactions: [
+      {
+        accountId: ACCOUNTS.BANK.id,
+        accountName: ACCOUNTS.BANK.name,
+        amount: 1500,
+        type: "debit",
+      },
+      {
+        accountId: ACCOUNTS.EVENT_REVENUE.id,
+        accountName: ACCOUNTS.EVENT_REVENUE.name,
+        amount: 1500,
+        type: "credit",
+      },
+    ],
+    createdAt: today,
+  },
+
+  // Event 5: This Month (Invoice Raised)
+  {
+    id: "je_5",
+    companyId: "mamo-15",
+    date: new Date(new Date().setDate(today.getDate() + 15)),
+    description: "Invoice Raised: Fashion Show",
+    receiptNumber: "INV-2026-005", // Added
+    source: "booking",
+    referenceId: "5",
+    currency: "USD",
+    transactions: [
+      {
+        accountId: ACCOUNTS.AR.id,
+        accountName: ACCOUNTS.AR.name,
+        amount: 5000,
+        type: "debit",
+      },
+      {
+        accountId: ACCOUNTS.EVENT_REVENUE.id,
+        accountName: ACCOUNTS.EVENT_REVENUE.name,
+        amount: 5000,
+        type: "credit",
+      },
+    ],
+    createdAt: today,
   },
 ];
