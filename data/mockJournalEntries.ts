@@ -1,3 +1,4 @@
+//data/mockJournalEntries.ts
 import { JournalEntry } from "@/types/accounting";
 import { ACCOUNTS } from "./mcokAccounts";
 

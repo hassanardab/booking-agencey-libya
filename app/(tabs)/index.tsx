@@ -8,6 +8,7 @@ import React, { useState } from "react";
 // Add this to your imports in index.tsx
 import ScrollingDay from "@/components/dashboard/scrollingDay";
 import StatsSection from "@/components/dashboard/StatsSection";
+import { getPostponedEvents } from "@/services/eventService";
 import {
   AlertCircle,
   Banknote,
@@ -109,32 +110,30 @@ const Dashboard = () => {
     },
   ];
 
-  const postponed = [
-    {
-      id: "3",
-      title: "Product Launch",
-      originalDate: "Oct 12",
-      reason: "Venue Issue",
-    },
-  ];
+  const postponedEvents = getPostponedEvents();
 
-  const searchResults = MOCK_EVENTS.filter((e) =>
-    e.title.toLowerCase().includes(search.toLowerCase()),
-  );
+  const searchResults = MOCK_EVENTS.filter((event) => {
+    const query = search.toLowerCase();
+
+    return (
+      event.title?.toLowerCase().includes(query) ||
+      event.customerName?.toLowerCase().includes(query) ||
+      event.place?.toLowerCase().includes(query) ||
+      event.description?.toLowerCase().includes(query)
+    );
+  });
 
   const upcomingEvents = MOCK_EVENTS.filter(
     (e) => e.status === "confirmed" || e.status === "partially_paid",
   );
-  const postponedEvents = MOCK_EVENTS.filter((e) => e.status === "postponed");
-  // Function to dismiss search when tapping outside
+
+  const insets = useSafeAreaInsets();
+  const [loading, setLoading] = useState(false); // new loading state
   const dismissSearch = () => {
     Keyboard.dismiss();
     setSearch("");
     setSearchResultsVisible(false);
   };
-  const insets = useSafeAreaInsets();
-  const [loading, setLoading] = useState(false); // new loading state
-
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
       {/* 1. Wrap everything in TouchableWithoutFeedback */}

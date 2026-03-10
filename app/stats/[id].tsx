@@ -1,4 +1,7 @@
+//app/stats/[id].tsx
 import { Colors, Radius, Shadows, Spacing } from "@/constants/theme";
+import { ACCOUNTS } from "@/data/mcokAccounts";
+import { MOCK_JOURNAL_ENTRIES } from "@/data/mockJournalEntries";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { getEventsByIds } from "@/services/eventService";
 import { Ionicons } from "@expo/vector-icons";
@@ -29,9 +32,14 @@ export default function StatsPage() {
   // Fetch the actual events
   const displayEvents = getEventsByIds(parsedIds);
 
-  const pageTitle = id
-    ? `${id.toString().charAt(0).toUpperCase()}${id.toString().slice(1)} Stats`
-    : "Stats";
+  const titles: Record<string, string> = {
+    cash: "Cash Payments",
+    bank: "Bank Payments",
+    unpaid: "Unpaid Events",
+    events: "Events",
+  };
+
+  const pageTitle = titles[id as string] ?? "Stats";
 
   // Helper to choose an icon based on the current stat category
   const getIconName = () => {
@@ -40,7 +48,31 @@ export default function StatsPage() {
     if (id === "unpaid") return "alert-circle-outline";
     return "calendar-outline";
   };
+  const getEventAmountForStat = (eventId: string) => {
+    const relatedEntries = MOCK_JOURNAL_ENTRIES.filter(
+      (entry) => entry.referenceId === eventId,
+    );
 
+    let total = 0;
+
+    relatedEntries.forEach((entry) => {
+      entry.transactions.forEach((tx) => {
+        if (id === "cash" && tx.accountId === ACCOUNTS.CASH.id) {
+          total += tx.amount;
+        }
+
+        if (id === "bank" && tx.accountId === ACCOUNTS.BANK.id) {
+          total += tx.amount;
+        }
+
+        if (id === "unpaid" && tx.accountId === ACCOUNTS.AR.id) {
+          total += tx.amount;
+        }
+      });
+    });
+
+    return total;
+  };
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <Stack.Screen
@@ -127,9 +159,11 @@ export default function StatsPage() {
             </View>
 
             <View style={styles.rightContent}>
-              <Text style={[styles.priceText, { color: theme.textMain }]}>
-                ${item.amount.toLocaleString()}
-              </Text>
+              {id !== "events" && (
+                <Text style={[styles.priceText, { color: theme.textMain }]}>
+                  ${getEventAmountForStat(item.id).toLocaleString()}
+                </Text>
+              )}
               <Text
                 style={[
                   styles.typeText,

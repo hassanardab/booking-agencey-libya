@@ -1,3 +1,4 @@
+//components/dashboard/StatsSection.tsx
 import { Radius, Shadows, Spacing } from "@/constants/theme";
 import { ACCOUNTS } from "@/data/mcokAccounts";
 import { MOCK_EVENTS } from "@/data/mockEvents";

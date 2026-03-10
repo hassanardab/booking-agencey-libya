@@ -1,3 +1,4 @@
+//data/mockEvents.ts
 import { BookingEvent } from "@/types/events";
 
 const now = new Date();
@@ -74,5 +75,5 @@ export const MOCK_EVENTS: BookingEvent[] = [
     status: "confirmed",
     createdAt: now,
     updatedAt: now,
-  }
+  },
 ];

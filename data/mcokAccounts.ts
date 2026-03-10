@@ -1,3 +1,4 @@
+//data/mcokAccounts.ts
 export const ACCOUNTS = {
   // ASSETS (1000-1999)
   CASH: { id: "1000", name: "Cash", type: "asset" },

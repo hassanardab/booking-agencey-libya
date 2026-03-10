@@ -22,14 +22,23 @@
 - [x][x] stats based on data
 - [x][x] app on a mock data
 - [x][x] click on stats opens data
+- [x][x] all dashboard sub UI done
+- [x][x] search logic with client names
 ## ==========
-
-- [_][_] khal Mohammed
-- [_][_] all dashboard sub UI done
-- [_][_] Quran 54 #1
-- [_][_] export data form firestore to supabase
+- [_][_] stat cards amounts 
 - [_][_] activites sub UI
-- [_][_] search logic with client names
+
+- [x][_] Quran 180-220 #1
+- [_][_] export data form firestore to supabase
+- [_][_] khal Mohammed
+- [_][_] baba Hassan
+- [_][_] azooz
+- [_][_] 3yood
+- [_][_] awatif
+- [_][_] amna
+- [_][_] sara
+- [_][_] khal ahmad
+- [_][_] khal ahmad
 - [_][_] PUSC pulic number 
 - [_][_] settings sub UI
 - [_][_] Dashboard Arbic UI
