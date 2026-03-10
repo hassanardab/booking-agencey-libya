@@ -73,14 +73,17 @@ Join our community of developers creating universal apps.
 - [x][x] generate pdf agreement
 
 - [x][x]date range UI fix
-- [_][_] week day picker
-- [_][_] mock data is actaul connected
+- [x][x] week day picker
+- [x][_] stats based on data
+- [x][_] app on a mock data
 
 - [_][_] public page UI
 - [_][_] contorl panel for public page
 
 - [_][_] all dashboard sub UI done
+- [_][_] Quran 54 #1
 - [_][_] activites sub UI
+- [_][_] PUSC pulic number 
 - [_][_] settings sub UI
 - [_][_] Dashboard Arbic UI
 - [_][_] activites Arbic UI
@@ -108,4 +111,14 @@ Join our community of developers creating universal apps.
 - [_][_] scan qr code/barcode
 
 - Phase #3 Backend & Testing
-- [_][_] generating receipt takes much time due to logo image
+- [_][_] Logo in all sizes
+- [_][_] splash screen animation
+- [_][_] offline mode support
+- [_][_] generate receipt faster(image)
+- [_][_] Quran 54 #2
+- [_][_] Quran 54 #3
+- [_][_] Quran 54 #4
+- [_][_] Quran 54 #5
+- [_][_] Quran 54 #6
+- [_][_] Quran 54 #7
+- [_][_] Quran 54 #8
