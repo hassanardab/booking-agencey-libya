@@ -232,7 +232,7 @@ export default function CreateEvent() {
               </View>
             </View>
             <View style={{ flex: 1, marginLeft: Spacing.md }}>
-              <InputLabel label="Date & Time" />
+              <InputLabel label={t("event.form.label.date")} />
               <TouchableOpacity
                 style={[
                   styles.input,
@@ -259,7 +259,7 @@ export default function CreateEvent() {
 
           {/* Payment Section */}
           <View style={styles.section}>
-            <InputLabel label="Payment" />
+            <InputLabel label={t("event.form.label.payment")} />
             <View style={styles.paymentMethodRow}>
               {["cash", "card", "transfer"].map((method) => (
                 <TouchableOpacity
@@ -291,7 +291,7 @@ export default function CreateEvent() {
               ))}
             </View>
             <View style={{ marginTop: Spacing.md }}>
-              <InputLabel label="Paid Amount" />
+              <InputLabel label={t("event.form.label.paid")} />
               <View
                 style={[
                   styles.priceInputWrapper,
@@ -318,7 +318,7 @@ export default function CreateEvent() {
 
           {/* Section: Internal Notes */}
           <View style={styles.section}>
-            <InputLabel label="Internal Notes" />
+            <InputLabel label={t("event.form.label.notes")} />
             <TextInput
               style={[
                 styles.textArea,
@@ -328,7 +328,7 @@ export default function CreateEvent() {
                   borderColor: theme.border,
                 },
               ]}
-              placeholder="Any specific requirements..."
+              placeholder={t("event.form.placeholder.notes")}
               multiline
               numberOfLines={4}
               placeholderTextColor={theme.textSecondary}
