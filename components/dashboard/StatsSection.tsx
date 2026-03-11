@@ -15,6 +15,7 @@ import {
   Wallet,
 } from "lucide-react-native";
 import React, { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Platform,
   ScrollView,
@@ -38,6 +39,14 @@ const StatsSection: React.FC<StatsSectionProps> = ({
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [showPicker, setShowPicker] = useState<"start" | "end" | null>(null);
+  const { t } = useTranslation();
+  // Define filter options with keys and translated labels
+  const filterOptions = [
+    { key: "Today", label: t("dashboard.filter.today") },
+    { key: "Week", label: t("dashboard.filter.week") },
+    { key: "Month", label: t("dashboard.filter.month") },
+    { key: "Custom", label: t("dashboard.filter.custom") },
+  ];
 
   const onDateChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
     setShowPicker(null);
@@ -80,6 +89,21 @@ const StatsSection: React.FC<StatsSectionProps> = ({
       }
       return true;
     };
+    // Compute the title based on activeFilter
+    const activeRangeTitle = () => {
+      switch (activeFilter) {
+        case "Today":
+          return t("dashboard.filter.today");
+        case "Week":
+          return t("dashboard.filter.week");
+        case "Month":
+          return t("dashboard.filter.month");
+        case "Custom":
+          return t("dashboard.filter.custom");
+        default:
+          return "";
+      }
+    };
 
     const filteredEntries = MOCK_JOURNAL_ENTRIES.filter((entry) =>
       isInRange(entry.date),
@@ -119,7 +143,7 @@ const StatsSection: React.FC<StatsSectionProps> = ({
     return [
       {
         id: "cash",
-        label: "Cash Revenue",
+        label: t("dashboard.stats.cash"),
         value: `${cashTotal.toLocaleString()} د.ل.`,
         icon: <Wallet size={20} color={theme.success} />,
         bg: "#ECFDF5",
@@ -127,7 +151,7 @@ const StatsSection: React.FC<StatsSectionProps> = ({
       },
       {
         id: "bank",
-        label: "Bank Revenue",
+        label: t("dashboard.stats.bank"),
         value: `${bankTotal.toLocaleString()} د.ل.`,
         icon: <Banknote size={20} color={theme.primary} />,
         bg: "#EEF2FF",
@@ -135,7 +159,7 @@ const StatsSection: React.FC<StatsSectionProps> = ({
       },
       {
         id: "unpaid",
-        label: "Unpaid",
+        label: t("dashboard.stats.unpaid"),
         value: `${unpaidTotal.toLocaleString()} د.ل.`,
         icon: <AlertCircle size={20} color={theme.danger} />,
         bg: "#FEF2F2",
@@ -144,7 +168,9 @@ const StatsSection: React.FC<StatsSectionProps> = ({
       {
         id: "events",
         label:
-          activeFilter === "Custom" ? "Range Events" : `Events ${activeFilter}`,
+          activeFilter === t("dashboard.stats.custom")
+            ? t("dashboard.filter.range")
+            : `${t("dashboard.stats.events")} ${activeRangeTitle()}`,
         value: filteredEvents.length.toLocaleString(),
         icon: <CalendarIcon size={20} color={theme.warning} />,
         bg: "#FFFBEB",
@@ -161,13 +187,13 @@ const StatsSection: React.FC<StatsSectionProps> = ({
         style={{ marginBottom: Spacing.md }}
       >
         <View style={styles.filterWrapper}>
-          {["Today", "Week", "Month", "Custom"].map((item) => (
+          {filterOptions.map((option) => (
             <TouchableOpacity
-              key={item}
-              onPress={() => setActiveFilter(item)}
+              key={option.key}
+              onPress={() => setActiveFilter(option.key)} // set the key
               style={[
                 styles.filterPill,
-                activeFilter === item && {
+                activeFilter === option.key && {
                   backgroundColor: theme.primary,
                   borderColor: theme.primary,
                 },
@@ -176,10 +202,10 @@ const StatsSection: React.FC<StatsSectionProps> = ({
               <Text
                 style={[
                   styles.filterText,
-                  activeFilter === item && { color: theme.white },
+                  activeFilter === option.key && { color: theme.white },
                 ]}
               >
-                {item}
+                {option.label}
               </Text>
             </TouchableOpacity>
           ))}

@@ -157,7 +157,7 @@ const Dashboard = () => {
             />
             <TextInput
               style={styles.searchInput}
-              placeholder="Search events, clients..."
+              placeholder={t("dashboard.search.hint")}
               placeholderTextColor={theme.textSecondary}
               value={search}
               onChangeText={(text) => {
@@ -192,7 +192,9 @@ const Dashboard = () => {
               style={styles.todayButton}
               onPress={() => handleDateSelect(new Date())}
             >
-              <Text style={styles.todayButtonText}>Today</Text>
+              <Text style={styles.todayButtonText}>
+                {t("dashboard.filter.today")}
+              </Text>
             </TouchableOpacity>
           )}
           {/* !!! IMPORTANT: You must call the component here !!! */}
