@@ -33,8 +33,8 @@ export const resources = {
       "stats.discription.showing": "Showing",
 
       "stats.status.confirmed": "Confirmed",
-      "stats.discription.postponed": "Postponed",
-      "stats.discription.partially_paid": "Partially Paid",
+      "stats.status.postponed": "Postponed",
+      "stats.status.partially_paid": "Partially Paid",
 
       langName: "English",
       bookingLogic: "Booking Logic",
@@ -86,6 +86,22 @@ export const resources = {
       "event.details.action.postpone": "Postpone",
       "event.details.action.edit": "Edit Event",
       "event.details.action.delete": "Delete",
+
+      // Add payment form
+      "event.add.options.title": "Payment Options",
+      "event.add.options.dis": "Choose an action for this transaction",
+      "event.add.options.receipt": "View Receipt",
+      "event.add.options.edit": "Edit",
+      "event.add.options.delete": " Delete",
+      "event.add.options.delete_msg": " Transaction removed",
+      "event.add.options.cancel": " Cancel",
+      "event.add.journal.dis": "New payment",
+      "event.add.journal.success": "Success",
+      "event.add.journal.success_msg": "Payment added successfully",
+
+      "event.edit.no.payments": "No payments recorded",
+
+      "loading.indicatior": "Loading...",
 
       // Alerts & States
       "event.details.alert.delete.title": "Delete Event",
@@ -190,6 +206,22 @@ export const resources = {
       "event.details.action.postpone": "تأجيل",
       "event.details.action.edit": "تعديل",
       "event.details.action.delete": "حذف",
+
+      // Add payment form
+      "event.add.options.title": "خيارات الدفع",
+      "event.add.options.dis": "اختر إجراءً لهذه المعاملة",
+      "event.add.options.receipt": "عرض الإيصال",
+      "event.add.options.edit": "تعديل",
+      "event.add.options.delete": "حذف",
+      "event.add.options.delete_msg": "تم حذف المعاملة",
+      "event.add.options.cancel": "إلغاء",
+      "event.add.journal.dis": "دفعة جديدة",
+      "event.add.journal.success": "نجاح",
+      "event.add.journal.success_msg": "تمت إضافة الدفعة بنجاح",
+
+      "event.edit.no.payments": "لا توجد عمليات دفع مسجلة",
+
+      "loading.indicatior": "لحظات...",
 
       // Alerts & States
       "event.details.alert.delete.title": "حذف الحجز",

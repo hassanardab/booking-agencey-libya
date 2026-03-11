@@ -1,7 +1,13 @@
 //app/events/[id].tsx
+import PaymentForm from "@/components/PaymentForm";
 import { Colors, Spacing } from "@/constants/theme";
+import { ACCOUNTS } from "@/data/mcokAccounts";
 import { useColorScheme } from "@/hooks/use-color-scheme";
-import { getAllJournalsForEvent } from "@/services/accountingService";
+import {
+  addJournalEntry,
+  deleteJournalEntry,
+  getAllJournalsForEvent,
+} from "@/services/accountingService";
 import { generateAgreementPdf } from "@/services/agreement/pdfAgreementService";
 import { changeToPostponedEvent, getEventById } from "@/services/eventService";
 import { generateReceiptPdf } from "@/services/pdf/pdfReceiptService";
@@ -10,12 +16,13 @@ import { BookingEvent } from "@/types/events";
 import { FontAwesome5, Ionicons } from "@expo/vector-icons";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
-import { useTranslation } from "react-i18next"; // Use the hook instead
+import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
   Alert,
   Dimensions,
   Linking,
+  Modal,
   ScrollView,
   StyleSheet,
   Text,
@@ -31,13 +38,22 @@ export default function EventDetails() {
   const theme = Colors[scheme ?? "light"];
   const styles = createStyles(theme);
   const [loading, setLoading] = useState(false);
+  const [showAddPayment, setShowAddPayment] = useState(false);
+  const [newPaymentMethod, setNewPaymentMethod] = useState<
+    "cash" | "card" | "transfer"
+  >("cash");
+  const [isMenuVisible, setIsMenuVisible] = useState(false);
+  const [selectedPayment, setSelectedPayment] = useState<JournalEntry | null>(
+    null,
+  );
+
+  const { t } = useTranslation();
 
   const { id } = useLocalSearchParams<{ id: string }>();
   if (!id) return null;
   const event = getEventById(id);
 
   const payments = getAllJournalsForEvent(event?.id as string);
-  const { t } = useTranslation();
   if (!event)
     return (
       <View style={styles.container}>
@@ -200,6 +216,89 @@ export default function EventDetails() {
     );
   };
 
+  const [newPaidAmount, setNewPaidAmount] = useState("");
+
+  // Handler for opening the options menu for a payment
+  // Handler for opening the options menu for a payment
+  const handlePaymentOptions = (entry: JournalEntry) => {
+    setSelectedPayment(entry);
+    setIsMenuVisible(true);
+  };
+
+  const closeMenu = () => {
+    setIsMenuVisible(false);
+    setSelectedPayment(null);
+  };
+
+  const handleSaveNewPayment = () => {
+    // 1. Validate and parse the input amount
+    const amount = parseFloat(newPaidAmount);
+    if (isNaN(amount) || amount <= 0) {
+      Alert.alert("Invalid Amount", "Please enter a valid payment amount.");
+      return;
+    }
+
+    // 2. Determine the Debit side (Asset) based on payment method
+    // Cash goes to Cash account; Card and Transfer go to Bank
+    const debitAccount =
+      newPaymentMethod === "cash" ? ACCOUNTS.CASH : ACCOUNTS.BANK;
+
+    // 3. Construct the balancing transactions (Double Entry)
+    const transactions = [
+      {
+        accountId: debitAccount.id,
+        accountName: debitAccount.name,
+        amount: amount,
+        type: "debit" as const, // Increasing Asset
+      },
+      {
+        accountId: ACCOUNTS.EVENT_REVENUE.id,
+        accountName: ACCOUNTS.EVENT_REVENUE.name,
+        amount: amount,
+        type: "credit" as const, // Increasing Revenue
+      },
+    ];
+
+    // 4. Build the complete Journal Entry
+    const newEntry: JournalEntry = {
+      id: `je_${Date.now()}`,
+      companyId: "mamo-15",
+      date: new Date(),
+      description: t("event.add.journal.dis") || `Payment for ${event.title}`,
+      receiptNumber: `RCPT-${Date.now()}`,
+      source: "booking",
+      referenceId: event.id,
+      currency: event.currency || "USD",
+      transactions: transactions, // Now contains balancing entries
+      metadata: {
+        paymentMethod: newPaymentMethod,
+        recordedBy: "Admin", // Ideally the logged-in user's name
+      },
+      createdAt: new Date(),
+    };
+
+    // 5. Save and Reset
+    addJournalEntry(newEntry);
+    setShowAddPayment(false);
+    setNewPaidAmount("");
+
+    Alert.alert(
+      t("event.add.journal.success"),
+      t("event.add.journal.success_msg"),
+    );
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "confirmed":
+        return theme.success;
+      case "postponed":
+        return theme.primary;
+      default:
+        return theme.danger; // for cancelled, pending, etc.
+    }
+  };
+
   return (
     <SafeAreaView
       style={[styles.safeArea, { backgroundColor: theme.background }]}
@@ -258,7 +357,7 @@ export default function EventDetails() {
               <View
                 style={[
                   styles.statusBadge,
-                  { backgroundColor: theme.success + "20" },
+                  { backgroundColor: getStatusColor(event.status) + "20" }, // 20% opacity
                 ]}
               >
                 <Text style={[styles.statusText, { color: theme.success }]}>
@@ -297,17 +396,67 @@ export default function EventDetails() {
           </View>
 
           {/* 3. Timeline – Dynamic from Journal Entries */}
-          <Text style={styles.sectionTitle}>
-            {t("event.details.section.timeline")}
-          </Text>
+          <View
+            style={[styles.rowBetween, { marginTop: 28, marginBottom: 12 }]}
+          >
+            <Text
+              style={[styles.sectionTitle, { marginTop: 0, marginBottom: 0 }]}
+            >
+              {t("event.details.section.timeline")}
+            </Text>
+            <TouchableOpacity
+              onPress={() => setShowAddPayment(!showAddPayment)}
+            >
+              <Ionicons
+                name={
+                  showAddPayment ? "close-circle-outline" : "add-circle-outline"
+                }
+                size={24}
+                color={theme.primary}
+              />
+            </TouchableOpacity>
+          </View>
+
+          {/* Inline Add Payment Form */}
+          {showAddPayment && (
+            <View
+              style={{
+                backgroundColor: theme.surface,
+                padding: 16,
+                borderRadius: 16,
+                marginBottom: 16,
+              }}
+            >
+              <PaymentForm
+                theme={theme}
+                paymentMethod={newPaymentMethod}
+                paidAmount={newPaidAmount}
+                onMethodChange={setNewPaymentMethod}
+                onAmountChange={setNewPaidAmount}
+              />
+              <TouchableOpacity
+                style={[
+                  styles.actionBtn,
+                  { backgroundColor: theme.primary, width: "100%" },
+                ]}
+                onPress={handleSaveNewPayment}
+              >
+                <Text style={[styles.actionBtnText, { color: "#FFF" }]}>
+                  Save Payment
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
+
           <View style={styles.timelineContainer}>
             {payments.length === 0 ? (
-              <Text style={styles.emptyTimeline}>No payments recorded</Text>
+              <Text style={styles.emptyTimeline}>
+                {t("event.edit.no.payments")}
+              </Text>
             ) : (
               payments.map((entry, index) => {
                 const amount = getJournalAmount(entry);
                 const paymentMethod = entry.metadata?.paymentMethod || "other";
-                const paymentType = entry.description || "Payment";
                 const isLast = index === payments.length - 1;
 
                 return (
@@ -318,32 +467,27 @@ export default function EventDetails() {
                     </View>
                     <View style={styles.timelineContent}>
                       <View style={styles.rowBetween}>
-                        {/* <Text style={styles.paymentType}>
-                          {paymentType} -
-                          {paymentMethod.replace("_", " ").toUpperCase()}
-                        </Text> */}
                         <Text style={styles.paymentType}>
                           {entry.currency || "USD"} {amount.toFixed(2)}
                         </Text>
-                        {/* Fixed receipt button – now visible and clickable */}
+
+                        {/* Replaced fixed receipt button with dynamic options button */}
                         <TouchableOpacity
                           style={styles.receiptBtn}
-                          onPress={() => handleReceiptPress(entry)}
+                          onPress={() => handlePaymentOptions(entry)}
                         >
                           <Ionicons
-                            name="print-outline"
-                            size={14}
+                            name="ellipsis-horizontal"
+                            size={16}
                             color={theme.primary}
                           />
-                          <Text style={styles.receiptBtnText}>
-                            {t("event.details.timeline.receipt")}
-                          </Text>
                         </TouchableOpacity>
                       </View>
+
                       <View style={styles.rowBetween}>
                         <View>
                           <Text style={styles.paymentMeta}>
-                            {formatJournalDate(entry.date)} •
+                            {formatJournalDate(entry.date)} •{" "}
                             {paymentMethod.replace("_", " ").toUpperCase()}
                           </Text>
                           <Text style={styles.recordedBy}>
@@ -352,17 +496,6 @@ export default function EventDetails() {
                             })}
                           </Text>
                         </View>
-                        {/* Edit button to open up the payment form */}
-                        {/* <TouchableOpacity
-                          style={[styles.receiptBtn]}
-                          onPress={() => handleReceiptPress(entry)}
-                        >
-                          <Ionicons
-                            name="create-outline"
-                            size={14}
-                            color={theme.primary}
-                          />
-                        </TouchableOpacity> */}
                       </View>
                     </View>
                   </View>
@@ -414,9 +547,117 @@ export default function EventDetails() {
       {loading && (
         <View style={styles.loadingOverlay}>
           <ActivityIndicator size="large" color={theme.primary} />
-          <Text style={styles.loadingText}>Loading...</Text>
+          <Text style={styles.loadingText}>{t("loading.indicatior")}</Text>
         </View>
       )}
+      {/* Payment Options Menu Modal */}
+      <Modal
+        visible={isMenuVisible}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={closeMenu}
+      >
+        <TouchableOpacity
+          style={styles.modalOverlay}
+          activeOpacity={1}
+          onPress={closeMenu}
+        >
+          <View style={styles.menuContainer}>
+            <Text style={styles.menuTitle}>{t("event.add.options.title")}</Text>
+            {/* Optional Subtitle */}
+            {/* <Text style={styles.menuSubtitle}>{t("event.add.options.dis")}</Text> */}
+
+            <TouchableOpacity
+              style={styles.menuItem}
+              onPress={() => {
+                if (selectedPayment) handleReceiptPress(selectedPayment);
+                closeMenu();
+              }}
+            >
+              <Ionicons
+                name="receipt-outline"
+                size={20}
+                color={theme.primary}
+              />
+              <Text style={styles.menuItemText}>
+                {t("event.add.options.receipt")}
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.menuItem}
+              onPress={() => {
+                if (selectedPayment)
+                  console.log("Edit pressed", selectedPayment.id);
+                closeMenu();
+              }}
+            >
+              <Ionicons
+                name="create-outline"
+                size={20}
+                color={theme.textMain}
+              />
+              <Text style={styles.menuItemText}>
+                {t("event.add.options.edit")}
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.menuItem}
+              onPress={() => {
+                Alert.alert(
+                  t("event.details.alert.delete.title"),
+                  t("event.details.alert.delete.msg"),
+                  [
+                    { text: t("event.details.alert.cancel"), style: "cancel" },
+                    {
+                      text: t("event.details.alert.delete.confirm"),
+                      style: "destructive",
+                      onPress: async () => {
+                        setLoading(true);
+                        try {
+                          if (selectedPayment) {
+                            deleteJournalEntry(selectedPayment.id);
+                            Alert.alert(
+                              t("event.add.options.delete"),
+                              t("event.add.options.delete_msg"),
+                            );
+                          }
+                          closeMenu();
+                        } catch (error) {
+                        } finally {
+                          setLoading(false);
+                        }
+                      },
+                    },
+                  ],
+                );
+              }}
+            >
+              <Ionicons name="trash-outline" size={20} color={theme.danger} />
+              <Text style={[styles.menuItemText, { color: theme.danger }]}>
+                {t("event.add.options.delete")}
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                styles.menuItem,
+                {
+                  borderBottomWidth: 0,
+                  justifyContent: "center",
+                  marginTop: Spacing.sm,
+                },
+              ]}
+              onPress={closeMenu}
+            >
+              <Text style={styles.menuCancelText}>
+                {t("event.details.alert.cancel")}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </TouchableOpacity>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -563,5 +804,44 @@ const createStyles = (theme: any) =>
       fontSize: 14,
       color: "#1e457e",
       fontWeight: "500",
+    },
+    modalOverlay: {
+      flex: 1,
+      backgroundColor: "rgba(0, 0, 0, 0.4)",
+      justifyContent: "flex-end", // Pushes the menu to the bottom
+    },
+    menuContainer: {
+      backgroundColor: theme.background,
+      borderTopLeftRadius: 24,
+      borderTopRightRadius: 24,
+      padding: Spacing.lg,
+      paddingBottom: 40, // Extra padding for safe area at the bottom
+    },
+    menuTitle: {
+      fontSize: 16,
+      fontWeight: "800",
+      color: theme.textSecondary,
+      textAlign: "center",
+      marginBottom: Spacing.md,
+      textTransform: "uppercase",
+      letterSpacing: 0.5,
+    },
+    menuItem: {
+      flexDirection: "row",
+      alignItems: "center",
+      paddingVertical: 16,
+      borderBottomWidth: 1,
+      borderBottomColor: theme.border,
+      gap: 12,
+    },
+    menuItemText: {
+      fontSize: 16,
+      fontWeight: "600",
+      color: theme.textMain,
+    },
+    menuCancelText: {
+      fontSize: 16,
+      fontWeight: "700",
+      color: theme.textSecondary,
     },
   });

@@ -1,7 +1,9 @@
 //app/events/create.tsx
+import PaymentForm from "@/components/PaymentForm";
 import { Colors, Radius, Spacing } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { getEventById } from "@/services/eventService";
+import { JournalEntry } from "@/types/accounting";
 import { Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Stack, router, useLocalSearchParams } from "expo-router";
@@ -259,63 +261,13 @@ export default function CreateEvent() {
 
           {/* Payment Section */}
           {!isEditing && (
-            <View style={styles.section}>
-              <InputLabel label={t("event.form.label.payment")} />
-              <View style={styles.paymentMethodRow}>
-                {["cash", "card", "transfer"].map((method) => (
-                  <TouchableOpacity
-                    key={method}
-                    style={[
-                      styles.paymentMethodBtn,
-                      {
-                        backgroundColor:
-                          paymentMethod === method
-                            ? theme.primary
-                            : theme.surface,
-                        borderColor: theme.border,
-                      },
-                    ]}
-                    onPress={() => setPaymentMethod(method as any)}
-                  >
-                    <Text
-                      style={[
-                        styles.paymentMethodText,
-                        {
-                          color:
-                            paymentMethod === method ? "#FFF" : theme.textMain,
-                        },
-                      ]}
-                    >
-                      {t(`event.form.method.${method}`)}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-              <View style={{ marginTop: Spacing.md }}>
-                <InputLabel label={t("event.form.label.paid")} />
-                <View
-                  style={[
-                    styles.priceInputWrapper,
-                    {
-                      backgroundColor: theme.surface,
-                      borderColor: theme.border,
-                    },
-                  ]}
-                >
-                  <Text style={{ color: theme.textSecondary, marginRight: 4 }}>
-                    $
-                  </Text>
-                  <TextInput
-                    style={[styles.priceInput, { color: theme.textMain }]}
-                    placeholder="0"
-                    keyboardType="numeric"
-                    placeholderTextColor={theme.textSecondary}
-                    value={paidAmount}
-                    onChangeText={handlePaidAmountChange}
-                  />
-                </View>
-              </View>
-            </View>
+            <PaymentForm
+              theme={theme}
+              paymentMethod={paymentMethod}
+              paidAmount={paidAmount}
+              onMethodChange={setPaymentMethod}
+              onAmountChange={handlePaidAmountChange}
+            />
           )}
 
           {/* Section: Internal Notes */}
@@ -503,3 +455,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
 });
+function handleReceiptPress(entry: JournalEntry) {
+  throw new Error("Function not implemented.");
+}
