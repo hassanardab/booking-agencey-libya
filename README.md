@@ -1,4 +1,5 @@
 ## Phase #1 UI
+
 - [x][x] UI main 3 page with themes
 - [x][x] search function UI
 - [x][x] event details screen
@@ -18,70 +19,76 @@
 - [x][x] generate pdf agreement
 - [x][x]date range UI fix
 - [x][x] week day picker
-- [x][x] Ream 2 currencies 
+- [x][x] Ream 2 currencies
 - [x][x] stats based on data
 - [x][x] app on a mock data
 - [x][x] click on stats opens data
 - [x][x] all dashboard sub UI done
 - [x][x] search logic with client names
+- [x][x] stat cards amounts
+
 ## ==========
-- [_][_] stat cards amounts 
-- [_][_] activites sub UI
+
+- [x][x] Dashboard Arbic UI
+- [\_][_] stats list Arbic UI
+- [\_][_] Dashboard Arbic UI
+- [\_][_] Dashboard Arbic UI
 
 - [x][_] Quran 180-220 #1
-- [_][_] export data form firestore to supabase
-- [_][_] khal Mohammed
-- [_][_] baba Hassan
-- [_][_] azooz
-- [_][_] 3yood
-- [_][_] awatif
-- [_][_] amna
-- [_][_] sara
-- [_][_] khal ahmad
-- [_][_] khal ahmad
-- [_][_] PUSC pulic number 
-- [_][_] settings sub UI
-- [_][_] Dashboard Arbic UI
-- [_][_] activites Arbic UI
-- [_][_] settings Arbic UI
-- [_][_] event details Arbic UI
-- [_][_] add/edit event Arbic UI
-- [_][_] print(receitp/agreemnt) Arabic UI
+- [\_][_] export data form firestore to supabase
+- [\_][_] activites sub UI
+- [\_][_] khal ahmad
+- [\_][_] PUSC pulic number
+- [\_][_] settings sub UI
+- [\_][_] activites Arbic UI
+- [\_][_] settings Arbic UI
+- [\_][_] event details Arbic UI
+- [\_][_] add/edit event Arbic UI
+- [\_][_] print(receitp/agreemnt) Arabic UI
 
-- [_][_] them dynamic
-- [_][_] Ar/En works fine (system auto default)
+- [\_][_] khal Mohammed
+- [\_][_] baba Hassan
+- [\_][_] azooz
+- [\_][_] 3yood
+- [\_][_] awatif
+- [\_][_] amna
+- [\_][_] sara
+- [\_][_] khal ahmad
+- [\_][_] them dynamic
+- [\_][_] Ar/En works fine (system auto default)
 
-- [_][_] sign up
-- [_][_] login page
-- [_][_] forget password page
+- [\_][_] sign up
+- [\_][_] login page
+- [\_][_] forget password page
 
 - Phase #2 functions
-- [_][_] signing PDFs 
-- [_][_] enable firebase push notification and app notifications 
-- [_][_] supabase storage
-- [_][_] firebase authintication 
-- [_][_] firebase firestore 
-- [_][_] supabase database 
-- [_][_] GPS, location and maps
-- [_][_] take pictures, upload an image or upload a file 
-- [_][_] scan qr code/barcode
+- [\_][_] signing PDFs
+- [\_][_] enable firebase push notification and app notifications
+- [\_][_] supabase storage
+- [\_][_] firebase authintication
+- [\_][_] firebase firestore
+- [\_][_] supabase database
+- [\_][_] GPS, location and maps
+- [\_][_] take pictures, upload an image or upload a file
+- [\_][_] scan qr code/barcode
 
 - Phase #3 Backend & Testing
-- [_][_] Logo in all sizes
-- [_][_] splash screen animation
-- [_][_] offline mode support
-- [_][_] generate receipt faster(image)
-- [_][_] Quran 54 #2
-- [_][_] Quran 54 #3
-- [_][_] Quran 54 #4
-- [_][_] Quran 54 #5
-- [_][_] Quran 54 #6
-- [_][_] Quran 54 #7
-- [_][_] Quran 54 #8
+- [\_][_] Logo in all sizes
+- [\_][_] splash screen animation
+- [\_][_] offline mode support
+- [\_][_] generate receipt faster(image)
+- [\_][_] Quran 54 #2
+- [\_][_] Quran 54 #3
+- [\_][_] Quran 54 #4
+- [\_][_] Quran 54 #5
+- [\_][_] Quran 54 #6
+- [\_][_] Quran 54 #7
+- [\_][_] Quran 54 #8
 
 ==========
-- [_][_] public page UI
-- [_][_] contorl panel for public page
+
+- [\_][_] public page UI
+- [\_][_] contorl panel for public page
 
 # Welcome to your Expo app 👋
 
@@ -119,6 +126,7 @@ npm run reset-project
 ```
 
 # Welcome to your Expo app 👋
+
 This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
 
 ## Learn more
@@ -134,4 +142,3 @@ Join our community of developers creating universal apps.
 
 - [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
 - [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
-

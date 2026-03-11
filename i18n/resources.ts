@@ -4,8 +4,12 @@ export const resources = {
     translation: {
       welcome: "Welcome back",
 
-      //dashborad
+      //App bar
       "dashboard.title": "Dashboard",
+      "settings.title": "Settings",
+      "activites.title": "Activites",
+
+      //dashborad
       "dashboard.view.calendar": "View Calendar",
       "dashboard.upcoming.events": "Upcoming Events",
       "dashboard.postponed.events": "Postponed Events",
@@ -21,7 +25,13 @@ export const resources = {
       "dashboard.stats.events": "Events",
       "dashboard.filter.range": "Range Events",
 
-      settings: "Settings",
+      //Stats list
+      "stats.title.cash": "Cash Payments",
+      "stats.title.bank": "Bank Payments",
+      "stats.title.unpaid": "Unpaid Payments",
+      "stats.title.events": "Events",
+      "stats.discription.showing": "Showing",
+
       langName: "English",
       bookingLogic: "Booking Logic",
       //pdf receipt
@@ -32,8 +42,12 @@ export const resources = {
     translation: {
       welcome: "مرحباً بك مجدداً",
 
+      //App bar
+      "dashboard.title": "الرئيسية",
+      "settings.title": "الإعدادات",
+      "activites.title": "السجل",
+
       //dashborad
-      "dashboard.title": "لوحة التحكم",
       "dashboard.view.calendar": "فتح التقويم",
       "dashboard.upcoming.events": "الحجوزات القادمة",
       "dashboard.postponed.events": "الحجوزات المؤجلة",
@@ -49,7 +63,13 @@ export const resources = {
       "dashboard.stats.events": "أحداث",
       "dashboard.filter.range": "الأحداث خلال الفترة",
 
-      settings: "الإعدادات",
+      //Stats list
+      "stats.title.cash": "الدفع النقدي",
+      "stats.title.bank": "التحويلات المصرفية",
+      "stats.title.unpaid": "مبالغ غير مسددة",
+      "stats.title.events": "الحجوزات",
+      "stats.discription.showing": "إجمالي الحجوزات",
+
       langName: "العربية",
       bookingLogic: "منطق الحجز",
 

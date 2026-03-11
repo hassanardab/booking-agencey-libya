@@ -6,6 +6,7 @@ import { useColorScheme } from "@/hooks/use-color-scheme";
 import { getEventsByIds } from "@/services/eventService";
 import { Ionicons } from "@expo/vector-icons";
 import { router, Stack, useLocalSearchParams } from "expo-router";
+import { t } from "i18next";
 import {
   FlatList,
   StyleSheet,
@@ -33,10 +34,10 @@ export default function StatsPage() {
   const displayEvents = getEventsByIds(parsedIds);
 
   const titles: Record<string, string> = {
-    cash: "Cash Payments",
-    bank: "Bank Payments",
-    unpaid: "Unpaid Events",
-    events: "Events",
+    cash: t("stats.title.cash"),
+    bank: t("stats.title.bank"),
+    unpaid: t("stats.title.unpaid"),
+    events: t("stats.title.events"),
   };
 
   const pageTitle = titles[id as string] ?? "Stats";
@@ -89,8 +90,7 @@ export default function StatsPage() {
           {pageTitle}
         </Text>
         <Text style={[styles.subHeader, { color: theme.textSecondary }]}>
-          Showing {displayEvents.length} filtered{" "}
-          {displayEvents.length === 1 ? "event" : "events"}
+          {t("stats.discription.showing")} {displayEvents.length}
         </Text>
       </View>
 

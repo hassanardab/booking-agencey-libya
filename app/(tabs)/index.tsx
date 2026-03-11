@@ -259,12 +259,19 @@ const Dashboard = () => {
 
           {postponedEvents.map((item) => (
             <View key={item.id} style={styles.postponedCard}>
-              <View>
+              <TouchableOpacity
+                onPress={() =>
+                  router.push({
+                    pathname: `/events/[id]`,
+                    params: { id: item.id },
+                  })
+                }
+              >
                 <Text style={styles.postponedTitle}>{item.title}</Text>
                 <Text style={styles.postponedReason}>
                   Was: {item.startDate.toLocaleDateString()} • {item.notes}
                 </Text>
-              </View>
+              </TouchableOpacity>
               <TouchableOpacity style={styles.rescheduleBtn}>
                 <Text style={styles.rescheduleText}>Reschedule</Text>
               </TouchableOpacity>
