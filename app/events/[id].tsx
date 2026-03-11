@@ -7,6 +7,7 @@ import {
   addJournalEntry,
   deleteJournalEntry,
   getAllJournalsForEvent,
+  getPaidAmountForEvent,
 } from "@/services/accountingService";
 import { generateAgreementPdf } from "@/services/agreement/pdfAgreementService";
 import { changeToPostponedEvent, getEventById } from "@/services/eventService";
@@ -60,6 +61,19 @@ export default function EventDetails() {
         <Text>{t("event.details.not_found")}</Text>
       </View>
     );
+
+  // 1. DYNAMIC CALCULATION: Get the real paid amount from the Ledger
+  const paidAmount = id ? getPaidAmountForEvent(id) : 0;
+  const remainingBalance = (event?.amount || 0) - paidAmount;
+
+  // 2. TIMELINE HELPER: Only show the "Cash Impact" of a transaction in the list
+  const getJournalCashImpact = (entry: JournalEntry): number => {
+    return entry.transactions.reduce((sum, t) => {
+      const isAsset =
+        t.accountId === ACCOUNTS.CASH.id || t.accountId === ACCOUNTS.BANK.id;
+      return t.type === "debit" && isAsset ? sum + t.amount : sum;
+    }, 0);
+  };
 
   const openWhatsApp = () => {
     setLoading(true);
@@ -178,6 +192,20 @@ export default function EventDetails() {
     </View>
   );
 
+  const getPaidAmount = (entries: JournalEntry[]) => {
+    return entries.reduce((sum, entry) => {
+      const cashLike = entry.transactions.filter(
+        (t) =>
+          t.type === "debit" &&
+          (t.accountName === "Cash" || t.accountName === "Bank"),
+      );
+
+      const entryTotal = cashLike.reduce((s, t) => s + t.amount, 0);
+
+      return sum + entryTotal;
+    }, 0);
+  };
+
   const ActionButton = ({ icon, label, color, outline, onPress }: any) => (
     <TouchableOpacity
       style={[
@@ -210,12 +238,17 @@ export default function EventDetails() {
 
   // Helper to get total amount from a journal entry (sum of debits)
   const getJournalAmount = (entry: JournalEntry): number => {
-    return entry.transactions.reduce(
-      (sum, t) => (t.type === "debit" ? sum + t.amount : sum),
-      0,
-    );
-  };
+    return entry.transactions.reduce((sum, t) => {
+      // Check if the transaction is a DEBIT
+      // AND if it belongs to a "Liquid" account (Cash or Bank)
+      const isLiquidPayment =
+        t.type === "debit" &&
+        (t.accountId === ACCOUNTS.CASH.id || t.accountId === ACCOUNTS.BANK.id);
 
+      return isLiquidPayment ? sum + t.amount : sum;
+    }, 0);
+  };
+  
   const [newPaidAmount, setNewPaidAmount] = useState("");
 
   // Handler for opening the options menu for a payment
@@ -231,52 +264,42 @@ export default function EventDetails() {
   };
 
   const handleSaveNewPayment = () => {
-    // 1. Validate and parse the input amount
-    const amount = parseFloat(newPaidAmount);
-    if (isNaN(amount) || amount <= 0) {
-      Alert.alert("Invalid Amount", "Please enter a valid payment amount.");
-      return;
-    }
+    const amount = parseFloat(newPaidAmount); // [cite: 206]
+    if (isNaN(amount) || amount <= 0) return;
 
-    // 2. Determine the Debit side (Asset) based on payment method
-    // Cash goes to Cash account; Card and Transfer go to Bank
     const debitAccount =
-      newPaymentMethod === "cash" ? ACCOUNTS.CASH : ACCOUNTS.BANK;
+      newPaymentMethod === "cash" ? ACCOUNTS.CASH : ACCOUNTS.BANK; // [cite: 213]
 
-    // 3. Construct the balancing transactions (Double Entry)
     const transactions = [
       {
         accountId: debitAccount.id,
         accountName: debitAccount.name,
         amount: amount,
-        type: "debit" as const, // Increasing Asset
+        type: "debit" as const, // We received cash/bank money [cite: 222]
       },
       {
-        accountId: ACCOUNTS.EVENT_REVENUE.id,
-        accountName: ACCOUNTS.EVENT_REVENUE.name,
+        // BEST PRACTICE: Instead of EVENT_REVENUE, we credit AR (Accounts Receivable)
+        // This signifies the customer's debt for this event is decreasing.
+        accountId: ACCOUNTS.AR.id,
+        accountName: ACCOUNTS.AR.name,
         amount: amount,
-        type: "credit" as const, // Increasing Revenue
+        type: "credit" as const, // Reducing the Asset "Money Owed to Us" [cite: 391]
       },
     ];
 
-    // 4. Build the complete Journal Entry
     const newEntry: JournalEntry = {
-      id: `je_${Date.now()}`,
+      id: `je_${Date.now()}`, // [cite: 231]
       companyId: "mamo-15",
       date: new Date(),
-      description: t("event.add.journal.dis") || `Payment for ${event.title}`,
+      description: `Payment for ${event.title}`, // [cite: 234]
       receiptNumber: `RCPT-${Date.now()}`,
       source: "booking",
       referenceId: event.id,
       currency: event.currency || "USD",
-      transactions: transactions, // Now contains balancing entries
-      metadata: {
-        paymentMethod: newPaymentMethod,
-        recordedBy: "Admin", // Ideally the logged-in user's name
-      },
+      transactions: transactions,
+      metadata: { paymentMethod: newPaymentMethod, recordedBy: "Admin" }, // [cite: 243, 244]
       createdAt: new Date(),
     };
-
     // 5. Save and Reset
     addJournalEntry(newEntry);
     setShowAddPayment(false);
@@ -360,7 +383,12 @@ export default function EventDetails() {
                   { backgroundColor: getStatusColor(event.status) + "20" }, // 20% opacity
                 ]}
               >
-                <Text style={[styles.statusText, { color: theme.success }]}>
+                <Text
+                  style={[
+                    styles.statusText,
+                    { color: getStatusColor(event.status) },
+                  ]}
+                >
                   {t(`stats.status.${event.status}`)}{" "}
                 </Text>
               </View>
@@ -379,17 +407,17 @@ export default function EventDetails() {
           <View style={styles.statsGrid}>
             <StatCard
               label={t("event.details.label.total")}
-              amount={event.amount}
+              amount={event.amount} // [cite: 158, 344]
               color={theme.textMain}
             />
             <StatCard
               label={t("event.details.label.paid")}
-              amount={event.paidAmount || 0}
+              amount={paidAmount} // Use dynamic value instead of event.paidAmount
               color={theme.success}
             />
             <StatCard
               label={t("event.details.label.remaining")}
-              amount={event.amount - (event.paidAmount || 0)}
+              amount={remainingBalance} // Correctly derived balance
               color={theme.danger}
               isBold
             />
