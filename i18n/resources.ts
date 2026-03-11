@@ -64,6 +64,43 @@ export const resources = {
       "event.form.action.cancel": "Cancel",
       "event.form.action.save": "Create Booking",
       "event.form.action.update": "Update Booking",
+
+      // Event Details Page
+      "event.details.not_found": "Event not found",
+      "event.details.whatsapp.btn": "Send WhatsApp",
+      "event.details.whatsapp.msg":
+        "Hello {{name}}, regarding your booking on {{date}}...",
+
+      "event.details.section.financial": "Financial Overview",
+      "event.details.label.total": "Total",
+      "event.details.label.paid": "Paid",
+      "event.details.label.remaining": "Remaining",
+
+      "event.details.section.timeline": "Payment Timeline",
+      "event.details.timeline.empty": "No payments recorded",
+      "event.details.timeline.receipt": "A5 Receipt",
+      "event.details.timeline.recorded_by": "Recorded by: {{user}}",
+
+      "event.details.section.actions": "Quick Actions",
+      "event.details.action.contract": "Contract",
+      "event.details.action.postpone": "Postpone",
+      "event.details.action.edit": "Edit Event",
+      "event.details.action.delete": "Delete",
+
+      // Alerts & States
+      "event.details.alert.delete.title": "Delete Event",
+      "event.details.alert.delete.msg":
+        "Are you sure you want to delete this event?",
+      "event.details.alert.delete.confirm": "Delete",
+
+      "event.details.alert.postpone.title": "Postponed Event",
+      "event.details.alert.postpone.msg":
+        "Are you sure you want to postpone this event?",
+
+      "event.details.alert.cancel": "Cancel",
+      "event.details.alert.success.postpone": "Event postponed",
+      "event.details.loading": "Loading...",
+      "event.details.error.pdf": "Could not generate document",
     },
   },
   ar: {
@@ -111,7 +148,7 @@ export const resources = {
       // Create/Edit Event Form
       "event.form.header.new": "حجز جديد",
       "event.form.header.edit": "تعديل الحجز",
-      "event.form.label.details": "تفاصيل الفعالية",
+      "event.form.label.details": "تفاصيل الحجز",
       "event.form.label.customer": "اسم الزبون",
       "event.form.label.phone": "رقم الهاتف",
       "event.form.label.amount": "القيمة الإجمالية",
@@ -131,6 +168,42 @@ export const resources = {
       "event.form.action.cancel": "إلغاء",
       "event.form.action.save": "إضافة الحجز",
       "event.form.action.update": "تعديل الحجز",
+
+      // Event Details Page
+      "event.details.not_found": "لم يتم العثور على الحجز",
+      "event.details.whatsapp.btn": "إرسال واتساب",
+      "event.details.whatsapp.msg":
+        "مرحباً {{name}}، بخصوص حجزك بتاريخ {{date}}...",
+
+      "event.details.section.financial": "الملخص المالي",
+      "event.details.label.total": "الإجمالي",
+      "event.details.label.paid": "المدفوع",
+      "event.details.label.remaining": "المتبقي",
+
+      "event.details.section.timeline": "سجل المدفوعات",
+      "event.details.timeline.empty": "لا توجد دفعات مسجلة",
+      "event.details.timeline.receipt": "الإيصال",
+      "event.details.timeline.recorded_by": "سُجل بواسطة: {{user}}",
+
+      "event.details.section.actions": "إجراءات سريعة",
+      "event.details.action.contract": "العقد",
+      "event.details.action.postpone": "تأجيل",
+      "event.details.action.edit": "تعديل",
+      "event.details.action.delete": "حذف",
+
+      // Alerts & States
+      "event.details.alert.delete.title": "حذف الحجز",
+      "event.details.alert.delete.msg": "هل أنت متأكد من حذف هذا الحجز؟",
+
+      "event.details.alert.postpone.title": "تأجيل الحجز",
+      "event.details.alert.postpone.msg":
+        "هل أنت متأكد أنك تريد تأجيل هذا الحدث؟",
+
+      "event.details.alert.delete.confirm": "حذف",
+      "event.details.alert.cancel": "إلغاء",
+      "event.details.alert.success.postpone": "تم تأجيل الحجز بنجاح",
+      "event.details.loading": "جاري التحميل...",
+      "event.details.error.pdf": "تعذر استخراج المستند",
     },
   },
 };

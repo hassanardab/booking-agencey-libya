@@ -3,17 +3,14 @@ import { Colors, Spacing } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { getAllJournalsForEvent } from "@/services/accountingService";
 import { generateAgreementPdf } from "@/services/agreement/pdfAgreementService";
-import {
-  changeToPostponedEvent,
-  deleteEvent,
-  getEventById,
-} from "@/services/eventService";
+import { changeToPostponedEvent, getEventById } from "@/services/eventService";
 import { generateReceiptPdf } from "@/services/pdf/pdfReceiptService";
 import { JournalEntry } from "@/types/accounting";
 import { BookingEvent } from "@/types/events";
 import { FontAwesome5, Ionicons } from "@expo/vector-icons";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next"; // Use the hook instead
 import {
   ActivityIndicator,
   Alert,
@@ -40,24 +37,31 @@ export default function EventDetails() {
   const event = getEventById(id);
 
   const payments = getAllJournalsForEvent(event?.id as string);
-
+  const { t } = useTranslation();
   if (!event)
     return (
       <View style={styles.container}>
-        <Text>Event not found</Text>
+        <Text>{t("event.details.not_found")}</Text>
       </View>
     );
 
   const openWhatsApp = () => {
+    setLoading(true);
+
     const phone = event.customerPhone || event.customerPhones?.[0] || "";
-    const msg = `Hello ${event.customerName}, regarding your event on ${new Date(event.startDate).toLocaleDateString()}...`;
+    const msg = t("event.details.whatsapp.msg", {
+      name: event.customerName,
+      date: new Date(event.startDate).toLocaleDateString(),
+    });
     Linking.openURL(
       `whatsapp://send?phone=${phone}&text=${encodeURIComponent(msg)}`,
     );
+    setLoading(false);
   };
-
   // Receipt button handler (placeholder)
   const handleReceiptPress = async (entry: JournalEntry) => {
+    setLoading(true);
+
     try {
       const uri = await generateReceiptPdf(event.id, entry.id);
       router.push({
@@ -67,6 +71,8 @@ export default function EventDetails() {
     } catch (error: any) {
       console.log("PDF ERROR:", error);
       Alert.alert("Error", error?.message || "Could not generate receipt");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -81,50 +87,64 @@ export default function EventDetails() {
       });
     } catch (error: any) {
       console.log("PDF ERROR:", error);
-      Alert.alert("Error", error?.message || "Could not generate agreemnet");
+      Alert.alert(
+        "Error",
+        t("event.details.error.pdf") || "Could not generate agreemnet",
+      );
     } finally {
       setLoading(false);
     }
   };
 
   const handlePostpone = (event: BookingEvent) => {
-    setLoading(true);
-    try {
-      changeToPostponedEvent(event);
-      Alert.alert("Success", "Event postponed");
-    } catch (error: any) {
-      setLoading(false);
+    Alert.alert(
+      t("event.details.alert.postpone.title"),
+      t("event.details.alert.postpone.msg"),
+      [
+        { text: t("event.details.alert.cancel"), style: "cancel" },
+        {
+          text: t("event.details.alert.delete.confirm"),
+          style: "destructive",
+          onPress: async () => {
+            setLoading(true);
+            try {
+              changeToPostponedEvent(event);
+              Alert.alert("Success", t("event.details.alert.success.postpone"));
+            } catch (error: any) {
+              setLoading(false);
 
-      console.log("loading error:", error);
-      Alert.alert("loading error:", error?.message);
-    } finally {
-      setLoading(false);
-    }
+              console.log("loading error:", error);
+              Alert.alert("loading error:", error?.message);
+            } finally {
+              setLoading(false);
+            }
+          },
+        },
+      ],
+    );
   };
 
   const handleDelete = () => {
-    Alert.alert("Delete Event", "Are you sure you want to delete this event?", [
-      { text: "Cancel", style: "cancel" },
-      {
-        text: "Delete",
-        style: "destructive",
-        onPress: async () => {
-          setLoading(true);
-          try {
-            const success = deleteEvent(event!.id);
-            if (success) {
-              router.back();
-            } else {
-              Alert.alert("Error", "Event not found");
+    Alert.alert(
+      t("event.details.alert.delete.title"),
+      t("event.details.alert.delete.msg"),
+      [
+        { text: t("event.details.alert.cancel"), style: "cancel" },
+        {
+          text: t("event.details.alert.delete.confirm"),
+          style: "destructive",
+          onPress: async () => {
+            setLoading(true);
+            try {
+              /* logic */
+            } catch (error) {
+            } finally {
+              setLoading(false);
             }
-          } catch (error: any) {
-            Alert.alert("Error", error?.message || "Could not delete event");
-          } finally {
-            setLoading(false);
-          }
+          },
         },
-      },
-    ]);
+      ],
+    );
   };
 
   const StatCard = ({ label, amount, color, isBold }: any) => (
@@ -209,16 +229,6 @@ export default function EventDetails() {
                   {event.customerPhone || event.customerPhones?.join(", ")}
                 </Text>
               </View>
-              <View
-                style={[
-                  styles.statusBadge,
-                  { backgroundColor: theme.success + "20" },
-                ]}
-              >
-                <Text style={[styles.statusText, { color: theme.success }]}>
-                  {event.status?.toUpperCase()}
-                </Text>
-              </View>
             </View>
 
             <View style={styles.dateTimeContainer}>
@@ -229,7 +239,7 @@ export default function EventDetails() {
                   color={theme.textSecondary}
                 />
                 <Text style={styles.dateText}>
-                  {new Date(event.startDate).toDateString()}
+                  {new Date(event.startDate).toLocaleDateString()}
                 </Text>
               </View>
               <View style={styles.dateItem}>
@@ -238,31 +248,48 @@ export default function EventDetails() {
                   size={16}
                   color={theme.textSecondary}
                 />
-                <Text style={styles.dateText}>10:00 AM</Text>
+                <Text style={styles.dateText}>
+                  {new Date(event.startDate).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </Text>
+              </View>
+              <View
+                style={[
+                  styles.statusBadge,
+                  { backgroundColor: theme.success + "20" },
+                ]}
+              >
+                <Text style={[styles.statusText, { color: theme.success }]}>
+                  {t(`stats.status.${event.status}`)}{" "}
+                </Text>
               </View>
             </View>
 
             <TouchableOpacity style={styles.whatsappBtn} onPress={openWhatsApp}>
               <FontAwesome5 name="whatsapp" size={20} color={theme.white} />
-              <Text style={styles.whatsappBtnText}>Send WhatsApp</Text>
+              <Text style={styles.whatsappBtnText}>WhatsApp</Text>
             </TouchableOpacity>
           </View>
 
           {/* 2. Financial Stats Grid */}
-          <Text style={styles.sectionTitle}>Financial Overview</Text>
+          <Text style={styles.sectionTitle}>
+            {t("event.details.section.financial")}
+          </Text>
           <View style={styles.statsGrid}>
             <StatCard
-              label="Total"
+              label={t("event.details.label.total")}
               amount={event.amount}
               color={theme.textMain}
             />
             <StatCard
-              label="Paid"
+              label={t("event.details.label.paid")}
               amount={event.paidAmount || 0}
               color={theme.success}
             />
             <StatCard
-              label="Remaining"
+              label={t("event.details.label.remaining")}
               amount={event.amount - (event.paidAmount || 0)}
               color={theme.danger}
               isBold
@@ -270,7 +297,9 @@ export default function EventDetails() {
           </View>
 
           {/* 3. Timeline – Dynamic from Journal Entries */}
-          <Text style={styles.sectionTitle}>Payment Timeline</Text>
+          <Text style={styles.sectionTitle}>
+            {t("event.details.section.timeline")}
+          </Text>
           <View style={styles.timelineContainer}>
             {payments.length === 0 ? (
               <Text style={styles.emptyTimeline}>No payments recorded</Text>
@@ -306,7 +335,9 @@ export default function EventDetails() {
                             size={14}
                             color={theme.primary}
                           />
-                          <Text style={styles.receiptBtnText}>A5 Receipt</Text>
+                          <Text style={styles.receiptBtnText}>
+                            {t("event.details.timeline.receipt")}
+                          </Text>
                         </TouchableOpacity>
                       </View>
                       <Text style={styles.paymentMeta}>
@@ -314,7 +345,9 @@ export default function EventDetails() {
                         {paymentMethod.replace("_", " ").toUpperCase()}
                       </Text>
                       <Text style={styles.recordedBy}>
-                        Recorded by: {entry.metadata?.recordedBy || "System"}
+                        {t("event.details.timeline.recorded_by", {
+                          user: entry.metadata?.recordedBy || "System",
+                        })}{" "}
                       </Text>
                     </View>
                   </View>
@@ -324,23 +357,25 @@ export default function EventDetails() {
           </View>
 
           {/* 4. Action Grid */}
-          <Text style={styles.sectionTitle}>Quick Actions</Text>
+          <Text style={styles.sectionTitle}>
+            {t("event.details.section.actions")}
+          </Text>
           <View style={styles.actionGrid}>
             <ActionButton
               icon="document-text-outline"
-              label="Contract"
+              label={t("event.details.action.contract")}
               color={theme.primary}
               onPress={() => handleAgreementPress(event)}
             />
             <ActionButton
               icon="pause-circle-outline"
-              label="Postpone"
+              label={t("event.details.action.postpone")}
               color={theme.warning}
               onPress={() => handlePostpone(event)}
             />
             <ActionButton
               icon="create-outline"
-              label="Edit Event"
+              label={t("event.details.action.edit")}
               color={theme.textSecondary}
               onPress={() =>
                 router.push({
@@ -353,7 +388,7 @@ export default function EventDetails() {
             />
             <ActionButton
               icon="trash-outline"
-              label="Delete"
+              label={t("event.details.action.delete")}
               color={theme.danger}
               outline
               onPress={() => handleDelete()}
@@ -396,7 +431,7 @@ const createStyles = (theme: any) =>
     customerPhone: { fontSize: 14, color: theme.textSecondary, marginTop: 4 },
     statusBadge: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8 },
     statusText: { fontSize: 11, fontWeight: "800" },
-    dateTimeContainer: { flexDirection: "row", marginTop: 16, gap: 16 },
+    dateTimeContainer: { flexDirection: "row", marginTop: Spacing.sm, gap: 16 },
     dateItem: { flexDirection: "row", alignItems: "center", gap: 6 },
     dateText: { fontSize: 13, color: theme.textSecondary, fontWeight: "500" },
     whatsappBtn: {

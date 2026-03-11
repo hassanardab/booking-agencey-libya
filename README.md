@@ -29,11 +29,17 @@
 - [x][x] Dashboard Arbic UI
 - [x][x] stats list Arbic UI
 
+- [x][x] Add/Edit event UI
+
 ## ==========
 
-- [x][_] Add/Edit event UI
-- [\_][_] Event details UI
-- [x][_] Quran 183-220 #1
+- [x][_] Brake >>>
+- [\_][_] Event details Ar UI
+- [x][_] Quran 190-220 #1
+
+- [\_][_] Event details button payment form UI
+- [\_][_] Edit event can't see payment options UI
+- [\_][_] Add/Edit payment form UI
 - [\_][_] export data form firestore to supabase
 - [\_][_] activites sub UI
 - [\_][_] khal ahmad

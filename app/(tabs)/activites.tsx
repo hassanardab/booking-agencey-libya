@@ -32,7 +32,7 @@ const ACTIVITY_DATA = [
   },
   {
     id: "3",
-    userName: "Omar",
+    userName: "عويشة",
     action: "left a comment on",
     target: "Q3 Financial Report",
     day: "Sunday",
@@ -43,7 +43,7 @@ const ACTIVITY_DATA = [
   },
   {
     id: "4",
-    userName: "System",
+    userName: "ريم",
     action: "ran automated backup",
     target: "Database Server",
     day: "Saturday",
