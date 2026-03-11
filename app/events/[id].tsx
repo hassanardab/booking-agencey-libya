@@ -340,15 +340,30 @@ export default function EventDetails() {
                           </Text>
                         </TouchableOpacity>
                       </View>
-                      <Text style={styles.paymentMeta}>
-                        {formatJournalDate(entry.date)} •
-                        {paymentMethod.replace("_", " ").toUpperCase()}
-                      </Text>
-                      <Text style={styles.recordedBy}>
-                        {t("event.details.timeline.recorded_by", {
-                          user: entry.metadata?.recordedBy || "System",
-                        })}{" "}
-                      </Text>
+                      <View style={styles.rowBetween}>
+                        <View>
+                          <Text style={styles.paymentMeta}>
+                            {formatJournalDate(entry.date)} •
+                            {paymentMethod.replace("_", " ").toUpperCase()}
+                          </Text>
+                          <Text style={styles.recordedBy}>
+                            {t("event.details.timeline.recorded_by", {
+                              user: entry.metadata?.recordedBy || "System",
+                            })}
+                          </Text>
+                        </View>
+                        {/* Edit button to open up the payment form */}
+                        {/* <TouchableOpacity
+                          style={[styles.receiptBtn]}
+                          onPress={() => handleReceiptPress(entry)}
+                        >
+                          <Ionicons
+                            name="create-outline"
+                            size={14}
+                            color={theme.primary}
+                          />
+                        </TouchableOpacity> */}
+                      </View>
                     </View>
                   </View>
                 );

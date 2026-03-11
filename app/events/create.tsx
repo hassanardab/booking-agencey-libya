@@ -258,63 +258,65 @@ export default function CreateEvent() {
           </View>
 
           {/* Payment Section */}
-          <View style={styles.section}>
-            <InputLabel label={t("event.form.label.payment")} />
-            <View style={styles.paymentMethodRow}>
-              {["cash", "card", "transfer"].map((method) => (
-                <TouchableOpacity
-                  key={method}
+          {!isEditing && (
+            <View style={styles.section}>
+              <InputLabel label={t("event.form.label.payment")} />
+              <View style={styles.paymentMethodRow}>
+                {["cash", "card", "transfer"].map((method) => (
+                  <TouchableOpacity
+                    key={method}
+                    style={[
+                      styles.paymentMethodBtn,
+                      {
+                        backgroundColor:
+                          paymentMethod === method
+                            ? theme.primary
+                            : theme.surface,
+                        borderColor: theme.border,
+                      },
+                    ]}
+                    onPress={() => setPaymentMethod(method as any)}
+                  >
+                    <Text
+                      style={[
+                        styles.paymentMethodText,
+                        {
+                          color:
+                            paymentMethod === method ? "#FFF" : theme.textMain,
+                        },
+                      ]}
+                    >
+                      {t(`event.form.method.${method}`)}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+              <View style={{ marginTop: Spacing.md }}>
+                <InputLabel label={t("event.form.label.paid")} />
+                <View
                   style={[
-                    styles.paymentMethodBtn,
+                    styles.priceInputWrapper,
                     {
-                      backgroundColor:
-                        paymentMethod === method
-                          ? theme.primary
-                          : theme.surface,
+                      backgroundColor: theme.surface,
                       borderColor: theme.border,
                     },
                   ]}
-                  onPress={() => setPaymentMethod(method as any)}
                 >
-                  <Text
-                    style={[
-                      styles.paymentMethodText,
-                      {
-                        color:
-                          paymentMethod === method ? "#FFF" : theme.textMain,
-                      },
-                    ]}
-                  >
-                    {t(`event.form.method.${method}`)}
+                  <Text style={{ color: theme.textSecondary, marginRight: 4 }}>
+                    $
                   </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-            <View style={{ marginTop: Spacing.md }}>
-              <InputLabel label={t("event.form.label.paid")} />
-              <View
-                style={[
-                  styles.priceInputWrapper,
-                  {
-                    backgroundColor: theme.surface,
-                    borderColor: theme.border,
-                  },
-                ]}
-              >
-                <Text style={{ color: theme.textSecondary, marginRight: 4 }}>
-                  $
-                </Text>
-                <TextInput
-                  style={[styles.priceInput, { color: theme.textMain }]}
-                  placeholder="0"
-                  keyboardType="numeric"
-                  placeholderTextColor={theme.textSecondary}
-                  value={paidAmount}
-                  onChangeText={handlePaidAmountChange}
-                />
+                  <TextInput
+                    style={[styles.priceInput, { color: theme.textMain }]}
+                    placeholder="0"
+                    keyboardType="numeric"
+                    placeholderTextColor={theme.textSecondary}
+                    value={paidAmount}
+                    onChangeText={handlePaidAmountChange}
+                  />
+                </View>
               </View>
             </View>
-          </View>
+          )}
 
           {/* Section: Internal Notes */}
           <View style={styles.section}>
