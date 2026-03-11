@@ -32,10 +32,38 @@ export const resources = {
       "stats.title.events": "Events",
       "stats.discription.showing": "Showing",
 
+      "stats.status.confirmed": "Confirmed",
+      "stats.discription.postponed": "Postponed",
+      "stats.discription.partially_paid": "Partially Paid",
+
       langName: "English",
       bookingLogic: "Booking Logic",
       //pdf receipt
       "pdf.receipt.singed": "Signed electronically",
+
+      // Create/Edit Event Form
+      "event.form.header.new": "New Booking",
+      "event.form.header.edit": "Edit Booking",
+      "event.form.label.details": "Event Details",
+      "event.form.label.customer": "Customer Name",
+      "event.form.label.phone": "Phone Number",
+      "event.form.label.amount": "Total Amount",
+      "event.form.label.date": "Date & Time",
+      "event.form.label.payment": "Payment",
+      "event.form.label.paid": "Paid Amount",
+      "event.form.label.notes": "Internal Notes",
+
+      "event.form.placeholder.title": "e.g. Wedding Photography",
+      "event.form.placeholder.customer": "Full Name",
+      "event.form.placeholder.notes": "Any specific requirements...",
+
+      "event.form.method.cash": "Cash",
+      "event.form.method.card": "Card",
+      "event.form.method.transfer": "Transfer",
+
+      "event.form.action.cancel": "Cancel",
+      "event.form.action.save": "Create Booking",
+      "event.form.action.update": "Update Booking",
     },
   },
   ar: {
@@ -70,11 +98,39 @@ export const resources = {
       "stats.title.events": "الحجوزات",
       "stats.discription.showing": "إجمالي الحجوزات",
 
+      "stats.status.confirmed": "مؤكد",
+      "stats.status.postponed": "مؤجل",
+      "stats.status.partially_paid": "مدفوع جزئياً",
+
       langName: "العربية",
       bookingLogic: "منطق الحجز",
 
       //pdf receipt
       "pdf.receipt.singed": "توقيع إلكتروني",
+
+      // Create/Edit Event Form
+      "event.form.header.new": "حجز جديد",
+      "event.form.header.edit": "تعديل الحجز",
+      "event.form.label.details": "تفاصيل الفعالية",
+      "event.form.label.customer": "اسم الزبون",
+      "event.form.label.phone": "رقم الهاتف",
+      "event.form.label.amount": "القيمة الإجمالية",
+      "event.form.label.date": "التاريخ والوقت",
+      "event.form.label.payment": "طريقة الدفع",
+      "event.form.label.paid": "المبلغ المدفوع",
+      "event.form.label.notes": "ملاحظات داخلية",
+
+      "event.form.placeholder.title": "مثلاً: تصوير حفل زفاف",
+      "event.form.placeholder.customer": "الاسم الثلاثي",
+      "event.form.placeholder.notes": "أي متطلبات أو شروط خاصة...",
+
+      "event.form.method.cash": "نقدي",
+      "event.form.method.card": "بطاقة",
+      "event.form.method.transfer": "تحويل مصرفي",
+
+      "event.form.action.cancel": "إلغاء",
+      "event.form.action.save": "إضافة الحجز",
+      "event.form.action.update": "تعديل الحجز",
     },
   },
 };

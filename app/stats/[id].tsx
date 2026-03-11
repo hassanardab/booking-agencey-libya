@@ -74,6 +74,24 @@ export default function StatsPage() {
 
     return total;
   };
+
+  const statusLabels: Record<string, string> = {
+    confirmed: t("stats.status.confirmed"),
+    postponed: t("stats.status.postponed"),
+    partially_paid: t("stats.status.partially_paid"),
+  };
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "confirmed":
+        return theme.success;
+      case "postponed":
+        return theme.primary; // or theme.warning if you have it
+      case "partially_paid":
+        return theme.danger;
+      default:
+        return theme.textSecondary;
+    }
+  };
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <Stack.Screen
@@ -161,21 +179,22 @@ export default function StatsPage() {
             <View style={styles.rightContent}>
               {id !== "events" && (
                 <Text style={[styles.priceText, { color: theme.textMain }]}>
-                  ${getEventAmountForStat(item.id).toLocaleString()}
+                  {/* Changed $ to LYD to match your new mock data */}
+                  {getEventAmountForStat(item.id).toLocaleString()}{" "}
+                  {item.currency}
                 </Text>
               )}
+
               <Text
                 style={[
                   styles.typeText,
                   {
-                    color:
-                      item.status === "confirmed"
-                        ? theme.success
-                        : theme.textSecondary,
+                    color: getStatusColor(item.status), // Dynamic color from helper
                   },
                 ]}
               >
-                {item.status.replace("_", " ").toUpperCase()}
+                {/* Display Translated Status */}
+                {statusLabels[item.status] || item.status}
               </Text>
             </View>
 

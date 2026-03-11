@@ -26,15 +26,14 @@
 - [x][x] all dashboard sub UI done
 - [x][x] search logic with client names
 - [x][x] stat cards amounts
+- [x][x] Dashboard Arbic UI
+- [x][x] stats list Arbic UI
 
 ## ==========
 
-- [x][x] Dashboard Arbic UI
-- [\_][_] stats list Arbic UI
-- [\_][_] Dashboard Arbic UI
-- [\_][_] Dashboard Arbic UI
-
-- [x][_] Quran 180-220 #1
+- [x][_] Add/Edit event UI
+- [\_][_] Event details UI
+- [x][_] Quran 183-220 #1
 - [\_][_] export data form firestore to supabase
 - [\_][_] activites sub UI
 - [\_][_] khal ahmad

@@ -134,6 +134,25 @@ const Dashboard = () => {
     setSearch("");
     setSearchResultsVisible(false);
   };
+
+  const statusLabels: Record<string, string> = {
+    confirmed: t("stats.status.confirmed"),
+    postponed: t("stats.status.postponed"),
+    partially_paid: t("stats.status.partially_paid"),
+  };
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "confirmed":
+        return theme.success;
+      case "postponed":
+        return theme.primary; // or theme.warning if you have it
+      case "partially_paid":
+        return theme.danger;
+      default:
+        return theme.textSecondary;
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
       {/* 1. Wrap everything in TouchableWithoutFeedback */}
@@ -222,12 +241,19 @@ const Dashboard = () => {
                   <View style={styles.eventMeta}>
                     <Clock size={14} color={theme.textSecondary} />
                     {/* Format the Date object into a readable time */}
-                    <Text style={styles.eventTime}>
+                    <Text
+                      style={[
+                        styles.eventTime,
+                        {
+                          color: getStatusColor(event.status), // Dynamic color from helper
+                        },
+                      ]}
+                    >
                       {event.startDate.toLocaleTimeString([], {
                         hour: "2-digit",
                         minute: "2-digit",
                       })}
-                      • {event.status}
+                      • {statusLabels[event.status] || event.status}
                     </Text>
                   </View>
                 </View>

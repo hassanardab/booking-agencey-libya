@@ -5,6 +5,7 @@ import { getEventById } from "@/services/eventService";
 import { Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Stack, router, useLocalSearchParams } from "expo-router";
+import { t } from "i18next";
 import React, { useState } from "react";
 import {
   KeyboardAvoidingView,
@@ -131,7 +132,9 @@ export default function CreateEvent() {
     >
       <Stack.Screen
         options={{
-          headerTitle: "New Booking",
+          headerTitle: isEditing
+            ? t("event.form.header.edit")
+            : t("event.form.header.new"),
           headerShadowVisible: false,
           headerStyle: { backgroundColor: theme.background },
           headerTintColor: theme.textMain,
@@ -147,7 +150,7 @@ export default function CreateEvent() {
         >
           {/* Section: General Info */}
           <View style={styles.section}>
-            <InputLabel label="Event Details" />
+            <InputLabel label={t("event.form.label.details")} />
             <TextInput
               style={[
                 styles.input,
@@ -157,7 +160,7 @@ export default function CreateEvent() {
                   borderColor: theme.border,
                 },
               ]}
-              placeholder="e.g. Wedding Photography"
+              placeholder={t("event.form.placeholder.title")}
               placeholderTextColor={theme.textSecondary}
               value={form.title}
               onChangeText={(t) => setForm({ ...form, title: t })}
@@ -166,7 +169,7 @@ export default function CreateEvent() {
 
           {/* Section: Customer Info */}
           <View style={styles.section}>
-            <InputLabel label="Customer Name" />
+            <InputLabel label={t("event.form.label.customer")} />
             <TextInput
               style={[
                 styles.input,
@@ -176,13 +179,13 @@ export default function CreateEvent() {
                   borderColor: theme.border,
                 },
               ]}
-              placeholder="Full Name"
+              placeholder={t("event.form.placeholder.customer")}
               placeholderTextColor={theme.textSecondary}
               value={form.customer}
               onChangeText={(t) => setForm({ ...form, customer: t })}
             />
             <View style={{ marginTop: Spacing.md }}>
-              <InputLabel label="Phone Number" />
+              <InputLabel label={t("event.form.label.phone")} />
               <TextInput
                 style={[
                   styles.input,
@@ -192,7 +195,7 @@ export default function CreateEvent() {
                     borderColor: theme.border,
                   },
                 ]}
-                placeholder="555-123-4567"
+                placeholder="092-123-4567"
                 keyboardType="phone-pad"
                 placeholderTextColor={theme.textSecondary}
                 value={form.phone}
@@ -205,7 +208,7 @@ export default function CreateEvent() {
           {/* Section: Pricing & Date */}
           <View style={styles.row}>
             <View style={{ flex: 1 }}>
-              <InputLabel label="Total Amount" />
+              <InputLabel label={t("event.form.label.amount")} />
               <View
                 style={[
                   styles.priceInputWrapper,
@@ -282,7 +285,7 @@ export default function CreateEvent() {
                       },
                     ]}
                   >
-                    {method.charAt(0).toUpperCase() + method.slice(1)}
+                    {t(`event.form.method.${method}`)}
                   </Text>
                 </TouchableOpacity>
               ))}
@@ -369,7 +372,7 @@ export default function CreateEvent() {
           onPress={() => router.back()}
         >
           <Text style={[styles.cancelBtnText, { color: theme.textSecondary }]}>
-            Cancel
+            {t("event.form.action.cancel")}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -384,7 +387,9 @@ export default function CreateEvent() {
           }}
         >
           <Text style={styles.saveBtnText}>
-            {isEditing ? "Update Booking" : "Create Booking"}
+            {isEditing
+              ? t("event.form.action.update")
+              : t("event.form.action.save")}
           </Text>
         </TouchableOpacity>
       </View>
