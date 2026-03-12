@@ -46,17 +46,37 @@ export function deleteJournalEntry(id: string): boolean {
 export function getPaidAmountForEvent(eventId: string): number {
   const journals = MOCK_JOURNAL_ENTRIES.filter(
     (j) => j.referenceId === eventId,
-  ); //
+  );
 
   return journals.reduce((total, journal) => {
     return (
       total +
       journal.transactions.reduce((sum, t) => {
-        // Only count Debits to Asset accounts (Cash or Bank) as "Paid"
-        const isAssetAccount =
+        // 1. Identify "Real Money" accounts only
+        const isLiquidMoney =
           t.accountId === ACCOUNTS.CASH.id || t.accountId === ACCOUNTS.BANK.id;
-        return t.type === "debit" && isAssetAccount ? sum + t.amount : sum; // [cite: 191, 390]
+
+        // 2. Only sum if it's a Debit (increase) to a liquid money account
+        // We ignore ACCOUNTS.AR.id because that's just a tracking balance.
+        return t.type === "debit" && isLiquidMoney ? sum + t.amount : sum;
       }, 0)
     );
   }, 0);
+}
+/**
+ * Updates an existing journal entry
+ */
+export function updateJournalEntry(
+  id: string,
+  updatedData: Partial<JournalEntry>,
+): boolean {
+  const index = MOCK_JOURNAL_ENTRIES.findIndex((j) => j.id === id);
+  if (index !== -1) {
+    MOCK_JOURNAL_ENTRIES[index] = {
+      ...MOCK_JOURNAL_ENTRIES[index],
+      ...updatedData,
+    };
+    return true;
+  }
+  return false;
 }

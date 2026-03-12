@@ -87,6 +87,26 @@ export const resources = {
       "event.details.action.edit": "Edit Event",
       "event.details.action.delete": "Delete",
 
+      //Agreement print
+      "event.contract.sign.button": "Sign",
+      "event.contract.print.page": "Agreement Ready",
+      "event.contract.agreement.button": "Print",
+      "event.contract.agreement.generating": "Generating Agreemnet...",
+      "event.contract.signature.apply": "Applying signature...",
+      "event.contract.load.failed": "Failed to load PDF preview.",
+      "event.contract.clear.button": "Clear",
+      "event.contract.confirm.button": "Confirm",
+
+      //Receipt print
+      "event.receipt.sign.button": "Sign",
+      "event.receipt.print.page": "Receipt Ready",
+      "event.receipt.agreement.button": "Print",
+      "event.receipt.agreement.generating": "Generating receipt...",
+      "event.receipt.signature.apply": "Applying signature...",
+      "event.receipt.load.failed": "Failed to load PDF preview.",
+      "event.receipt.clear.button": "Clear",
+      "event.receipt.confirm.button": "Confirm",
+
       // Add payment form
       "event.add.options.title": "Payment Options",
       "event.add.options.dis": "Choose an action for this transaction",
@@ -206,6 +226,26 @@ export const resources = {
       "event.details.action.postpone": "تأجيل",
       "event.details.action.edit": "تعديل",
       "event.details.action.delete": "حذف",
+
+      //Agreement print
+      "event.contract.sign.button": "توقيع",
+      "event.contract.print.page": "العقد جاهز",
+      "event.contract.agreement.button": "طباعة",
+      "event.contract.agreement.generating": "جاري إنشاء العقد...",
+      "event.contract.signature.apply": "جاري إضافة التوقيع...",
+      "event.contract.load.failed": "فشل تحميل معاينة ملف PDF.",
+      "event.contract.clear.button": "مسح",
+      "event.contract.confirm.button": "تأكيد",
+
+      //Agreement print
+      "event.receipt.sign.button": "توقيع",
+      "event.receipt.print.page": "الإيصال جاهز",
+      "event.receipt.agreement.button": "طباعة",
+      "event.receipt.agreement.generating": "جاري إنشاء الإيصال...",
+      "event.receipt.signature.apply": "جاري إضافة التوقيع...",
+      "event.receipt.load.failed": "فشل تحميل معاينة ملف PDF.",
+      "event.receipt.clear.button": "مسح",
+      "event.receipt.confirm.button": "تأكيد",
 
       // Add payment form
       "event.add.options.title": "خيارات الدفع",

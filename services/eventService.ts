@@ -1,6 +1,7 @@
 //services/eventService.ts
 import { MOCK_EVENTS } from "@/data/mockEvents";
 import { BookingEvent } from "@/types/events";
+import { getPaidAmountForEvent } from "./accountingService";
 
 /**
  * Get event by ID
@@ -40,13 +41,61 @@ export function getPostponedEvents(): BookingEvent[] {
 }
 
 /**
- * Change event to postponed
+ * Reconciles event status based on actual payments and postponement flags.
+ * This should be called whenever a payment is added, edited, or deleted.
  */
-export function changeToPostponedEvent(event: BookingEvent): BookingEvent {
-  return {
+// services/eventService.ts
+
+export function syncEventStatus(eventId: string): BookingEvent | undefined {
+  const eventIndex = MOCK_EVENTS.findIndex((e) => e.id === eventId);
+  if (eventIndex === -1) return undefined;
+
+  const event = MOCK_EVENTS[eventIndex];
+
+  // Always fetch the absolute latest from the accounting service
+  const paidAmount = getPaidAmountForEvent(eventId);
+  const totalAmount = event.amount || 0;
+
+  let newStatus: BookingEvent["status"] = "pending";
+
+  // Logic Hierarchy
+  if (event.isPostponed) {
+    newStatus = "postponed";
+  } else if (paidAmount >= totalAmount && totalAmount > 0) {
+    newStatus = "confirmed";
+  } else if (paidAmount > 0) {
+    newStatus = "partially_paid";
+  }
+
+  // Update master record
+  const updatedEvent = {
     ...event,
-    status: "postponed",
+    status: newStatus,
+    paidAmount: paidAmount,
+    updatedAt: new Date(),
   };
+
+  MOCK_EVENTS[eventIndex] = updatedEvent;
+  return { ...updatedEvent };
+}
+
+/**
+ * Change event to postponed and update the source
+ */
+export function changeToPostponedEvent(
+  eventId: string,
+): BookingEvent | undefined {
+  const eventIndex = MOCK_EVENTS.findIndex((e) => e.id === eventId);
+  if (eventIndex === -1) return undefined;
+
+  MOCK_EVENTS[eventIndex] = {
+    ...MOCK_EVENTS[eventIndex],
+    isPostponed: true, // Set the flag that syncEventStatus checks
+    status: "postponed",
+    updatedAt: new Date(),
+  };
+
+  return MOCK_EVENTS[eventIndex];
 }
 
 /**

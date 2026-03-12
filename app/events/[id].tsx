@@ -138,7 +138,7 @@ export default function EventDetails() {
           onPress: async () => {
             setLoading(true);
             try {
-              changeToPostponedEvent(event);
+              changeToPostponedEvent(event.id);
               Alert.alert("Success", t("event.details.alert.success.postpone"));
             } catch (error: any) {
               setLoading(false);
@@ -248,7 +248,7 @@ export default function EventDetails() {
       return isLiquidPayment ? sum + t.amount : sum;
     }, 0);
   };
-  
+
   const [newPaidAmount, setNewPaidAmount] = useState("");
 
   // Handler for opening the options menu for a payment

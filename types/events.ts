@@ -13,15 +13,31 @@ export interface BookingEvent {
   balance?: number;
   paidAmount?: number;
   currency: string;
-  status: "confirmed" | "postponed" | "partially_paid" | "cancelled";
+  status:
+    | "confirmed"
+    | "postponed"
+    | "partially_paid"
+    | "cancelled"
+    | "pending";
   place?: string;
   notes?: string;
   description?: string;
   createdAt: Date;
+  isPostponed?: boolean;
   updatedAt: Date;
   clientId?: string;
   placeId?: string;
   source?: string;
   baseCurrencyAmount?: number;
   type?: "confirmed" | "unconfirmed";
+}
+
+export interface Client {
+  id: string;
+  Name: string;
+  Email?: string;
+  mainPhone?: string;
+  phones?: string[];
+  createdAt?: Date;
+  updatedAt?: Date;
 }

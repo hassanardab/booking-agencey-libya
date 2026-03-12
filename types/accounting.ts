@@ -37,7 +37,7 @@ export interface JournalEntry {
   clientId?: string;
 
   metadata?: {
-    paymentMethod?: string;
+    paymentMethod?: "cash" | "card" | "transfer";
     [key: string]: any;
   };
 }

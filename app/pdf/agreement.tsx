@@ -121,7 +121,7 @@ export default function ReceiptPreview() {
 
       lastPage.drawImage(pngImage, {
         x: 10,
-        y: 40,
+        y: 70,
         width: pngDims.width * scale,
         height: pngDims.height * scale,
       });
@@ -171,7 +171,9 @@ export default function ReceiptPreview() {
     return (
       <View style={styles.center}>
         <ActivityIndicator size="large" color="#1e457e" />
-        <Text style={{ marginTop: 10 }}>Generating Receipt...</Text>
+        <Text style={{ marginTop: 10 }}>
+          {t("event.contract.agreement.generating")}
+        </Text>
       </View>
     );
   }
@@ -181,7 +183,7 @@ export default function ReceiptPreview() {
       <View style={styles.container}>
         <Stack.Screen
           options={{
-            title: "Receipt Ready",
+            title: t("event.contract.print.page"),
             headerRight: () => (
               <TouchableOpacity onPress={sharePdf}>
                 <Ionicons name="share-outline" size={24} color="#1e457e" />
@@ -206,7 +208,9 @@ export default function ReceiptPreview() {
             />
           ) : (
             <View style={styles.center}>
-              <Text style={styles.subText}>Failed to load PDF preview.</Text>
+              <Text style={styles.subText}>
+                {t("event.contract.load.failed")}
+              </Text>
             </View>
           )}
         </View>
@@ -234,12 +238,16 @@ export default function ReceiptPreview() {
                 onPress={signPdf}
               >
                 <Ionicons name="create-outline" size={20} color="#1e457e" />
-                <Text style={styles.btnOutlineText}>Sign</Text>
+                <Text style={styles.btnOutlineText}>
+                  {t("event.contract.sign.button")}
+                </Text>
               </TouchableOpacity>
 
               <TouchableOpacity style={styles.btn} onPress={printPdf}>
                 <Ionicons name="print" size={20} color="#FFF" />
-                <Text style={styles.btnText}>Print</Text>
+                <Text style={styles.btnText}>
+                  {t("event.contract.agreement.button")}
+                </Text>
               </TouchableOpacity>
             </>
           )}
@@ -271,7 +279,9 @@ export default function ReceiptPreview() {
       {signing && (
         <View style={styles.signingOverlay}>
           <ActivityIndicator size="large" color={theme.primary} />
-          <Text style={styles.signingText}>Applying signature...</Text>
+          <Text style={styles.signingText}>
+            {t("event.contract.signature.apply")}
+          </Text>
         </View>
       )}
     </SafeAreaView>

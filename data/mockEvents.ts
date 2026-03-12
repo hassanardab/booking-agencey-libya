@@ -44,6 +44,7 @@ export const MOCK_EVENTS: BookingEvent[] = [
     endDate: new Date("2026-10-12T17:00:00"),
     amount: 3500,
     currency: "LYD",
+    isPostponed: true,
     status: "postponed",
     notes: "مشكلة في القاعة", // Venue Issue
     createdAt: now,
