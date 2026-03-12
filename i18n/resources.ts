@@ -137,6 +137,38 @@ export const resources = {
       "event.details.alert.success.postpone": "Event postponed",
       "event.details.loading": "Loading...",
       "event.details.error.pdf": "Could not generate document",
+
+      // ===== Settings Page =====
+      "settings.section.app_settings": "App Settings",
+      "settings.section.language": "Language",
+      "settings.font_size": "Font Size",
+      "settings.default": "Default",
+      "settings.notifications": "Notifications",
+      "settings.dark_mode": "Dark Mode",
+
+      "settings.section.organization": "Organization",
+      "settings.company.name": "Nexus Creative Ltd.",
+      "settings.company.slogan": "Innovating the future of events",
+      "settings.company.business_model": "Business Model",
+      "settings.company.business_model_value": "B2B Enterprise",
+      "settings.company.registration": "Registration",
+      "settings.company.registration_value": "#9920-X12",
+
+      "settings.currency": "Currency",
+      "settings.start_of_week": "Start of Week",
+
+      // Days (used for start of week)
+      "days.monday": "Monday",
+
+      "settings.max_bookings_per_day": "Max Bookings/Day",
+      "settings.unpaid_reminder": "Unpaid Reminder",
+      "settings.unpaid_reminder.24h_before": "24 Hours Before",
+
+      "settings.section.support": "Support",
+      "settings.developer_mode": "version",
+      "settings.contact_support_bot": "Contact Support Bot",
+
+      "settings.footer": "Built with ❤️ by DevTeam • 2026",
     },
   },
   ar: {
@@ -176,7 +208,7 @@ export const resources = {
       "stats.status.partially_paid": "مدفوع جزئياً",
 
       langName: "العربية",
-      bookingLogic: "منطق الحجز",
+      bookingLogic: "إعدادات الحجوزات",
 
       //pdf receipt
       "pdf.receipt.singed": "توقيع إلكتروني",
@@ -276,6 +308,37 @@ export const resources = {
       "event.details.alert.success.postpone": "تم تأجيل الحجز بنجاح",
       "event.details.loading": "جاري التحميل...",
       "event.details.error.pdf": "تعذر استخراج المستند",
+
+      // ===== Settings Page =====
+      "settings.section.app_settings": "إعدادات التطبيق",
+      "settings.section.language": "اللغة",
+      "settings.font_size": "حجم الخط",
+      "settings.default": "افتراضي",
+      "settings.notifications": "الإشعارات",
+      "settings.dark_mode": "الوضع الداكن",
+
+      "settings.section.organization": "المنظمة",
+      "settings.company.name": "نيكسوس كرييتيف المحدودة",
+      "settings.company.slogan": "نبتكر مستقبل الفعاليات",
+      "settings.company.business_model": "نموذج العمل",
+      "settings.company.business_model_value": "شركات B2B",
+      "settings.company.registration": "رقم التسجيل",
+      "settings.company.registration_value": "#٩٩٢٠-إكس١٢",
+
+      "settings.currency": "العملة",
+      "settings.start_of_week": "بداية الأسبوع",
+
+      "days.monday": "الاثنين",
+
+      "settings.max_bookings_per_day": "الحد الأقصى للحجوزات/يوم",
+      "settings.unpaid_reminder": "تذكير الدفعات غير المدفوعة",
+      "settings.unpaid_reminder.24h_before": "قبل ٢٤ ساعة",
+
+      "settings.section.support": "الدعم",
+      "settings.developer_mode": "النسخة",
+      "settings.contact_support_bot": "تواصل مع بوت الدعم",
+
+      "settings.footer": "بُني بـ ❤️ بواسطة فريق التطوير • ٢٠٢٦",
     },
   },
 };

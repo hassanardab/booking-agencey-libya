@@ -1,5 +1,5 @@
+//app/(tabs)/settings.tsx
 import { Colors, Radius, Shadows, Spacing } from "@/constants/theme";
-
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import * as Updates from "expo-updates"; // Needs: npx expo install expo-updates
 import {
@@ -138,7 +138,10 @@ const SettingsPage = () => {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView
+      style={[styles.safeArea, { backgroundColor: theme.background }]}
+      edges={["bottom"]}
+    >
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollBody}
@@ -152,7 +155,7 @@ const SettingsPage = () => {
           />
           <TextInput
             style={styles.searchInput}
-            placeholder="Search events, clients..."
+            placeholder={t("dashboard.search.hint")}
             placeholderTextColor={theme.textSecondary}
             value={search}
             onChangeText={setSearch}
@@ -179,25 +182,31 @@ const SettingsPage = () => {
         </View>
 
         {/* 3. App Settings */}
-        <Text style={styles.sectionTitle}>App Settings</Text>
+        <Text style={styles.sectionTitle}>
+          {t("settings.section.app_settings")}
+        </Text>
         <View style={styles.card}>
           <SettingRow
             icon={Globe}
-            label={t("language")} // Use translation key
+            label={t("settings.section.language")} // Use translation key
             value={i18n.language === "en" ? "English" : "العربية"} // Show active lang
             onPress={toggleLanguage}
           />
-          <SettingRow icon={Type} label="Font Size" value="Default" />
+          <SettingRow
+            icon={Type}
+            label={t("settings.font_size")}
+            value="Default"
+          />
           <SettingRow
             icon={Bell}
-            label="Notifications"
+            label={t("settings.notifications")}
             type="switch"
             value={notifications}
             onPress={() => setNotifications(!notifications)}
           />
           <SettingRow
             icon={Moon}
-            label="Dark Mode"
+            label={t("settings.dark_mode")}
             type="switch"
             value={isDarkMode}
             onPress={() => setIsDarkMode(!isDarkMode)}
@@ -206,7 +215,9 @@ const SettingsPage = () => {
         </View>
 
         {/* 4. Company Details Card (Branded) */}
-        <Text style={styles.sectionTitle}>Organization</Text>
+        <Text style={styles.sectionTitle}>
+          {t("settings.section.organization")}
+        </Text>
         <View style={[styles.card, styles.companyCard]}>
           <View style={styles.companyHeader}>
             <View style={styles.logoContainer}>
@@ -216,57 +227,79 @@ const SettingsPage = () => {
               />
             </View>
             <View>
-              <Text style={styles.companyName}>Nexus Creative Ltd.</Text>
+              <Text style={styles.companyName}>
+                {t("settings.company.name")}
+              </Text>
               <Text style={styles.companySlogan}>
-                Innovating the future of events
+                {t("settings.company.slogan")}
               </Text>
             </View>
           </View>
           <View style={styles.divider} />
           <View style={styles.companyDetailRow}>
-            <Text style={styles.detailLabel}>Business Model</Text>
-            <Text style={styles.detailValue}>B2B Enterprise</Text>
+            <Text style={styles.detailLabel}>
+              {t("settings.company.business_model")}
+            </Text>
+            <Text style={styles.detailValue}>
+              {t("settings.company.business_model_value")}
+            </Text>
           </View>
           <View style={styles.companyDetailRow}>
-            <Text style={styles.detailLabel}>Registration</Text>
-            <Text style={styles.detailValue}>#9920-X12</Text>
+            <Text style={styles.detailLabel}>
+              {t("settings.company.registration")}
+            </Text>
+            <Text style={styles.detailValue}>
+              {t("settings.company.registration_value")}
+            </Text>
           </View>
         </View>
 
         {/* 5. Booking Settings */}
-        <Text style={styles.sectionTitle}>Booking Logic</Text>
+        <Text style={styles.sectionTitle}>{t("bookingLogic")}</Text>
         <View style={styles.card}>
-          <SettingRow icon={DollarSign} label="Currency" value="USD ($)" />
+          <SettingRow
+            icon={DollarSign}
+            label={t("settings.currency")}
+            value="USD ($)"
+          />
           <SettingRow
             icon={CalendarDays}
-            label="Start of Week"
+            label={t("settings.start_of_week")}
             value="Monday"
           />
-          <SettingRow icon={Hash} label="Max Bookings/Day" value="12" />
+          <SettingRow
+            icon={Hash}
+            label={t("settings.max_bookings_per_day")}
+            value="12"
+          />
           <SettingRow
             icon={Clock}
-            label="Unpaid Reminder"
+            label={t("settings.unpaid_reminder")}
             value="24 Hours Before"
             isLast
           />
         </View>
 
         {/* 6. Developer & Support */}
-        <Text style={styles.sectionTitle}>Support</Text>
+        <Text style={styles.sectionTitle}>{t("settings.section.support")}</Text>
         <View style={styles.card}>
-          <SettingRow icon={Laptop} label="Developer Mode" value="v2.4.0-pro" />
+          <SettingRow
+            icon={Laptop}
+            label={t("settings.developer_mode")}
+            value="v2.4.0-pro"
+          />
           <TouchableOpacity style={styles.botButton}>
             <MessageSquareCode
               size={20}
               color={Colors[colorScheme ?? "light"].white}
             />
-            <Text style={styles.botButtonText}>Contact Support Bot</Text>
+            <Text style={styles.botButtonText}>
+              {t("settings.contact_support_bot")}
+            </Text>
           </TouchableOpacity>
         </View>
 
-        <Text style={styles.footerVersion}>
-          Built with ❤️ by DevTeam • 2026
-        </Text>
+        <Text style={styles.footerVersion}>{t("settings.footer")}</Text>
       </ScrollView>
     </SafeAreaView>
   );
@@ -490,7 +523,7 @@ const createStyles = (
     companyName: {
       fontSize: 18,
       fontWeight: "bold",
-      color: theme.white,
+      color: theme.primary,
     },
 
     companySlogan: {
@@ -544,6 +577,9 @@ const createStyles = (
       color: theme.textSecondary,
       fontSize: 12,
       marginBottom: Spacing.xl,
+    },
+    safeArea: {
+      flex: 1,
     },
   });
 
